@@ -26,7 +26,7 @@ wins") outranks the plugin's aesthetic preferences.
   `motion-engineer` (fresh-context reviewers).
 - Hooks: PostToolUse deterministic detector on UI file writes (advisory,
   never blocks); Stop reminder for unresolved critical findings.
-- Scripts (`bin/`, zero dependencies, Node >= 18):
+- Scripts (`scripts/`, zero dependencies, Node >= 18):
   `lexia-design-audit.mjs` (30 file rules + 2 project rules),
   `lexia-design-score.mjs` (init / gate / history),
   `lexia-design-update.mjs` (source drift, metadata only).
@@ -82,15 +82,15 @@ Per-project memory lives in `.lexia-design/` (brief, system, audits,
 decisions, evaluation history). Scaffold it manually with:
 
 ```bash
-node <plugin-root>/bin/lexia-design-audit.mjs --list-rules   # see detector rules
-node <plugin-root>/bin/lexia-design-score.mjs init           # scaffold .lexia-design/
+node <plugin-root>/scripts/lexia-design-audit.mjs --list-rules   # see detector rules
+node <plugin-root>/scripts/lexia-design-score.mjs init           # scaffold .lexia-design/
 ```
 
 ## Detector quick reference
 
 ```bash
-node bin/lexia-design-audit.mjs src/components/Hero.tsx      # specific files
-node bin/lexia-design-audit.mjs --deep src --format json     # whole tree + project rules
+node scripts/lexia-design-audit.mjs src/components/Hero.tsx      # specific files
+node scripts/lexia-design-audit.mjs --deep src --format json     # whole tree + project rules
 ```
 
 Exit 1 = critical/serious findings. `confidence: "review"` findings are
@@ -100,8 +100,8 @@ code.
 ## Convergence gate
 
 ```bash
-node bin/lexia-design-score.mjs gate --scores scores.json
-node bin/lexia-design-score.mjs history
+node scripts/lexia-design-score.mjs gate --scores scores.json
+node scripts/lexia-design-score.mjs history
 ```
 
 Defaults: MAX_ITERATIONS 4, MIN_TOTAL 8.5, MIN_DISTINCTIVENESS 7.5, zero
@@ -151,7 +151,7 @@ lexia-design/
 ├── skills/{lexia-design,design-system,design-audit,motion-design,update}/
 ├── agents/{design-director,ux-auditor,visual-critic,motion-engineer}.md
 ├── hooks/hooks.json
-├── bin/{lexia-design-audit,lexia-design-score,lexia-design-update}.mjs
+├── scripts/{lexia-design-audit,lexia-design-score,lexia-design-update}.mjs
 ├── references/{heuristics,anti-slop,accessibility,motion,visual-directions,component-libraries}/
 ├── evals/{cases,expected,fixtures,run-evals.mjs}
 ├── templates/

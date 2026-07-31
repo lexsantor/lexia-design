@@ -34,7 +34,7 @@ VISUAL_REGRESSIONS = 0
    NOTHING can render, say so explicitly, run the static audit only, and
    mark all visual scores as "not visually verified": never invent visual
    judgments of unrendered UI.
-8. AUDIT. Run `node ${CLAUDE_PLUGIN_ROOT}/bin/lexia-design-audit.mjs
+8. AUDIT. Run `node ${CLAUDE_PLUGIN_ROOT}/scripts/lexia-design-audit.mjs
    --deep <dir>` for deterministic findings. In parallel, dispatch
    fresh-context agents (ux-auditor, visual-critic, motion-engineer when
    motion exists) with the screenshots + brief. Fresh context is the
@@ -46,7 +46,7 @@ VISUAL_REGRESSIONS = 0
     functional errors exist.
 11. RE-RENDER. Same breakpoints, same pages.
 12. COMPARE. Against the previous iteration: fixed? regressed? Run
-    `node ${CLAUDE_PLUGIN_ROOT}/bin/lexia-design-score.mjs gate` with the
+    `node ${CLAUDE_PLUGIN_ROOT}/scripts/lexia-design-score.mjs gate` with the
     new scores; it appends history and returns a verdict. Revert any
     change that scored worse than what it replaced.
 13. STOP when: all thresholds met; OR verdict says no measurable

@@ -1,7 +1,7 @@
 # Scoring Rubric
 
 Fifteen dimensions, 0-10 each. Scores feed
-`bin/lexia-design-score.mjs gate`, which enforces thresholds and records
+`scripts/lexia-design-score.mjs gate`, which enforces thresholds and records
 history. Honesty rules first.
 
 ## Honesty rules

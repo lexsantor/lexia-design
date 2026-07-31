@@ -27,7 +27,7 @@
 4. Run everything:
 
 ```bash
-node --check bin/*.mjs evals/run-evals.mjs
+node --check scripts/*.mjs evals/run-evals.mjs
 node evals/run-evals.mjs --smoke
 claude plugin validate .
 ```

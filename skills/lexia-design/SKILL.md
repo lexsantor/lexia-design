@@ -89,9 +89,9 @@ thresholds, stop conditions). Compressed:
 
 ## Tooling
 
-- Detector: `node ${CLAUDE_PLUGIN_ROOT}/bin/lexia-design-audit.mjs
+- Detector: `node ${CLAUDE_PLUGIN_ROOT}/scripts/lexia-design-audit.mjs
   [files|--deep dir]` (deterministic findings, JSON/text).
-- Score gate: `node ${CLAUDE_PLUGIN_ROOT}/bin/lexia-design-score.mjs
+- Score gate: `node ${CLAUDE_PLUGIN_ROOT}/scripts/lexia-design-score.mjs
   gate --scores <file>` (thresholds, history, verdict); `init` scaffolds
   `.lexia-design/`.
 - Subskills: design-system, design-audit, motion-design, update

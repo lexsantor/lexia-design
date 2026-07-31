@@ -3,7 +3,7 @@
 The system cannot retrain itself; it learns operationally through
 persistent, traceable files per project. All under `.lexia-design/` at the
 project root. Create with:
-`node ${CLAUDE_PLUGIN_ROOT}/bin/lexia-design-score.mjs init`
+`node ${CLAUDE_PLUGIN_ROOT}/scripts/lexia-design-score.mjs init`
 
 ## Layout
 

@@ -26,7 +26,7 @@ them the detector output.
    waivers. No brief? Audit against general rules and say the direction
    dimension is unanchored.
 2. Deterministic pass:
-   `node ${CLAUDE_PLUGIN_ROOT}/bin/lexia-design-audit.mjs --deep <dir>
+   `node ${CLAUDE_PLUGIN_ROOT}/scripts/lexia-design-audit.mjs --deep <dir>
    --format json`. Rules with IDs (a11y/*, motion/*, slop/*, content/*,
    system/*); exit 1 means serious+ findings exist. Also run the
    project's own build/typecheck/lint/tests if present: a red build caps
@@ -54,7 +54,7 @@ them the detector output.
 7. Score 15 dimensions per
    `${CLAUDE_PLUGIN_ROOT}/skills/lexia-design/references/scoring.md`,
    evidence mandatory, n/a renormalized. Run
-   `node ${CLAUDE_PLUGIN_ROOT}/bin/lexia-design-score.mjs gate --scores
+   `node ${CLAUDE_PLUGIN_ROOT}/scripts/lexia-design-score.mjs gate --scores
    <file>` to record history and get the verdict.
 8. Report. Write `.lexia-design/DESIGN-AUDIT.md` from the template:
    scores table, findings grouped by severity with file:line + evidence +

@@ -24,7 +24,7 @@ without recording versions.
 ## Procedure
 
 1. Read `${CLAUDE_PLUGIN_ROOT}/sources.lock.json`.
-2. Run `node ${CLAUDE_PLUGIN_ROOT}/bin/lexia-design-update.mjs --check`:
+2. Run `node ${CLAUDE_PLUGIN_ROOT}/scripts/lexia-design-update.mjs --check`:
    metadata-only queries (git ls-remote HEAD, npm view version); no
    downloads, no code execution. Offline/unreachable sources are marked
    as such, honestly.

@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/lexia-design-audit.mjs\" --hook",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/lexia-design-audit.mjs\" --hook",
             "timeout": 15
           }
         ]
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/bin/lexia-design-audit.mjs\" --stop-check",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/lexia-design-audit.mjs\" --stop-check",
             "timeout": 10
           }
         ]

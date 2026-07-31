@@ -8,7 +8,7 @@
  *     2. Verifies every case has a grading rubric in evals/expected/<id>.md.
  *     3. Cross-checks forbidden_detector_rules against the real detector rule list.
  *     4. Runs the detector against evals/fixtures/* and asserts manifest expectations
- *        (this is a real self-test of bin/lexia-design-audit.mjs).
+ *        (this is a real self-test of scripts/lexia-design-audit.mjs).
  *   node evals/run-evals.mjs --live        Prints the headless command per case.
  *   node evals/run-evals.mjs --live --execute   Actually runs each case with the
  *        claude CLI in a temp workspace (REAL API COST; requires claude on PATH and
@@ -26,7 +26,7 @@ import process from "node:process";
 
 const EVALS_DIR = dirname(fileURLToPath(import.meta.url));
 const PLUGIN_ROOT = resolve(EVALS_DIR, "..");
-const AUDIT = join(PLUGIN_ROOT, "bin", "lexia-design-audit.mjs");
+const AUDIT = join(PLUGIN_ROOT, "scripts", "lexia-design-audit.mjs");
 
 const CASE_REQUIRED = ["id", "title", "prompt", "expected"];
 const EXPECTED_REQUIRED = ["activate"];

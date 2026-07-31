@@ -4,6 +4,17 @@ All notable changes to lexia-design. Format: Keep a Changelog; versioning:
 semver. Rule changes should cite the observed failure or source update that
 motivated them (changelog-driven hardening).
 
+## [0.1.1] - 2026-07-31
+
+### Changed
+
+- Renamed `bin/` to `scripts/`. Motivation (observed failure): claude.ai-
+  hosted plugin validation rejects top-level `bin/` because it is added to
+  PATH on the CLI without appearing on the admin approval surface. All
+  entry points were already invoked via explicit
+  `${CLAUDE_PLUGIN_ROOT}/scripts/...` paths in hooks and skills, so no
+  functionality changed; PATH exposure was never relied upon.
+
 ## [0.1.0] - 2026-07-31
 
 Initial release.

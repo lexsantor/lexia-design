@@ -11,7 +11,7 @@ Severity meaning:
 - flag: needs an explicit justification in DESIGN-DECISIONS to survive.
 - review: heuristic detection; human/agent judgment required.
 
-Rule IDs in brackets map to `bin/lexia-design-audit.mjs` where detection is
+Rule IDs in brackets map to `scripts/lexia-design-audit.mjs` where detection is
 deterministic. Patterns without an ID are judgment calls for the
 visual-critic agent.
 

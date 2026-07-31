@@ -6,7 +6,7 @@ detection is automated; application is human-approved, always.
 
 ## The flow (/lexia-design:update)
 
-1. `node bin/lexia-design-update.mjs --check` queries metadata only:
+1. `node scripts/lexia-design-update.mjs --check` queries metadata only:
    `git ls-remote <url> HEAD` for repos, `npm view <pkg> version` for
    packages. Web/spec sources (Skiper, Vengeance, WCAG, plugin docs) are
    flagged for manual re-verification when older than 90 days. Nothing
