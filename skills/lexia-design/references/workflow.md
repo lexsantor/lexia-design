@@ -82,9 +82,25 @@ VISUAL_REGRESSIONS = 0
 - Test content variants during render: short, average, hostile-long
   strings on key components.
 
-## Delivery
+## Delivery (always ends with the report)
 
-Final message includes: what was built, direction and why, dials, scores
-table with evidence, remaining known issues, exceptions logged, and how
-to run it. Update .lexia-design/ files (project-memory.md). Never declare
-thresholds met without the score gate output.
+Every run ends with the report, whatever the verdict — converged, stopped
+at max iterations, or stopped for no progress. The gate writes
+`.lexia-design/DESIGN-REPORT.md` and it is reproduced in the final
+message. Order is fixed:
+
+1. Blocking findings first, if any. Never lead with the score.
+2. `LEXIA SCORE X/100 — grade (label)`, with the coverage beside it and
+   the raw value when a cap applied.
+3. The dimension table: score, weight, points, delta vs previous
+   iteration, evidence per row.
+4. The gates table.
+5. What was built, direction and dials, exceptions logged, remaining
+   known issues, and how to run it.
+6. ONE recommended next step, not a menu.
+
+Never declare thresholds met without the gate output, and never present a
+score for a dimension that was not verified: mark it n/a and let the gate
+renormalize. Then update `.lexia-design/` (project-memory.md), including
+a short trajectory note: which fixes regressed, which were reapplied,
+which findings were false positives, and what to do first next time.

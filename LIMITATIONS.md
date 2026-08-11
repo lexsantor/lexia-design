@@ -22,6 +22,14 @@ Honest inventory. Read before relying on the plugin in production work.
    model/agent judgment; the gate prevents forgetting and drift, not
    dishonesty. The honesty rules in scoring.md are instructions, and a
    model can fail them.
+4b. The LEXIA SCORE /100 inherits that limit and adds its own: it is a
+   weighted opinion, not a measurement. The weights are a defensible
+   ordering, not a validated model; the caps stop a blocker from hiding
+   behind a high number, but nothing stops a generous reviewer from
+   scoring 8s where a strict one would score 6s. Compare it only across
+   equal coverage, and read the blockers and the evidence column before
+   the number. Two dimensions (DISTINCTIVENESS, parts of VISUAL_HIERARCHY
+   and MOTION_QUALITY) are explicitly subjective.
 5. Live evals require the claude CLI and consume real API credits;
    grading positive cases remains rubric-guided judgment, not exact
    string matching. Only the smoke suite is fully deterministic.

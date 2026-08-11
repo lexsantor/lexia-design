@@ -4,6 +4,65 @@ All notable changes to lexia-design. Format: Keep a Changelog; versioning:
 semver. Rule changes should cite the observed failure or source update that
 motivated them (changelog-driven hardening).
 
+## [0.3.0] - 2026-08-11
+
+Tier 1 of the knowledge-vault harvest (docs/learnings/learning-database.md),
+plus the report the plugin now always ends with.
+
+### Added
+
+- **LEXIA SCORE /100 and a mandatory end-of-run report.** The gate computes a
+  weighted composite over the 15 dimensions (weights follow the priority
+  order: usability and accessibility 10, task clarity and content integrity 9,
+  down to motion 4), renormalized over applicable dimensions, and writes
+  `.lexia-design/DESIGN-REPORT.md`: blockers first, then the score with its
+  coverage, then the dimension table with weight, points, delta and evidence,
+  then gates. New subcommands `report` and `weights`; `gate --format report`
+  prints the table. Motivation: the user asked for a single /100 in table
+  form; the caps below exist so the number cannot hide a blocker.
+- **Hard score caps**, each printed with its reason and the raw value it was
+  capped from: fabricated content 49, critical a11y/usability or failing build
+  59, visual regression 79, not visually verified 89. Grade bands A-F.
+- **Nine Tier-1 detector rules**, each fixture-proven (LD- ids refer to the
+  learning database): system/alpha-value-missing (LD-DS-01),
+  a11y/reveal-on-essential-content (LD-A11Y-03), motion/lcp-behind-reveal
+  (LD-MOT-01), motion/countup-zero-base (LD-MOT-02),
+  layout/order-with-asymmetric-tracks (LD-UX-01), i18n/provider-missing-locale
+  (LD-I18N-01), i18n/locale-switch-soft-nav (LD-I18N-02),
+  i18n/hardcoded-locale-href (LD-I18N-03), slop/negative-parallelism
+  (LD-SLOP-01). 45 file rules + 5 project rules total.
+- **references/accessibility/i18n-correctness.md**: the failure catalog for
+  localization defects that render the UI wrong while the build stays green,
+  plus coverage auditing (built-output verification per locale,
+  identical-string diffs) and the a11y-namespace practice.
+- **Capture protocol** in design-audit (LD-DA-05): full-page captures render
+  blank below reveals, scroll needs 700-900ms pauses, narrow widths need
+  device-metrics emulation, automation screenshots are downscaled and cannot
+  judge grain or motion.
+- **Production-build measurement and a hosting-layer bucket** (LD-DA-06,
+  LD-DA-07): never measure on a dev server; header-level findings are reported
+  separately with the deployment owner named.
+- **Blast-radius tiering** of edits (LD-WF-04) and consumer enumeration before
+  touching anything shared (LD-DS-24).
+- Four new fixtures (tokens-broken.css, legal-page.tsx, LocaleSwitcher.tsx,
+  stat-counter.tsx); the detector self-test now covers 54 expected firings.
+
+### Changed
+
+- **"The brief wins" scoped** (tension T1 in the learning database): the brief
+  overrides plugin taste, never usability evidence, accessibility, content
+  truth or arithmetic. Brand-owned items (logo, CTA channel, contact routing,
+  pricing, legal copy) are proposals requiring sign-off; the report separates
+  applied fixes from flagged proposals.
+- Reveal wrappers now carry two documented exemptions (LCP element, essential
+  content) in both the motion and accessibility references.
+- Layout failure catalog added to the heuristics reference (order vs tracks,
+  sticky containing block, min-w-0, nth-child alternation, card-on-section
+  contrast).
+- Copy rules gained the syntactic-tell section with its anti-overfitting
+  guardrail and expiry requirement (LD-SLOP-17, LD-SLOP-18) — imported BEFORE
+  the ban list, deliberately.
+
 ## [0.2.0] - 2026-08-11
 
 First changelog-driven hardening release. Motivation: 37 field learnings

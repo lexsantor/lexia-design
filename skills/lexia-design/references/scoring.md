@@ -1,8 +1,34 @@
 # Scoring Rubric
 
-Fifteen dimensions, 0-10 each. Scores feed
-`scripts/lexia-design-score.mjs gate`, which enforces thresholds and records
-history. Honesty rules first.
+Fifteen dimensions, 0-10 each, plus one composite: the LEXIA SCORE /100.
+Scores feed `scripts/lexia-design-score.mjs gate`, which enforces thresholds,
+records history, computes the composite and writes the report table. Honesty
+rules first.
+
+## LEXIA SCORE (the /100 the report leads with)
+
+Weighted mean of the applicable dimensions, renormalized so an n/a dimension
+neither helps nor hurts, then capped. Weights follow the priority order:
+USABILITY and ACCESSIBILITY 10, TASK_CLARITY and CONTENT_INTEGRITY 9,
+INFORMATION_ARCHITECTURE, VISUAL_HIERARCHY, RESPONSIVENESS and
+PRODUCTION_READINESS 7, TYPOGRAPHY, COLOR_AND_CONTRAST, SYSTEM_COHERENCE,
+DISTINCTIVENESS and PERFORMANCE 6, SPACING_AND_RHYTHM 5, MOTION_QUALITY 4.
+Print them with `lexia-design-score.mjs weights`.
+
+Hard caps applied after the average, each printed with its reason:
+
+- unverified fabricated content -> max 49
+- any critical accessibility or usability issue, or a failing build -> max 59
+- any visual regression vs the previous iteration -> max 79
+- not visually verified (nothing rendered) -> max 89
+
+Bands: 90+ A (ship), 80-89 B (ship with named follow-ups), 70-79 C (usable,
+material gaps), 60-69 D (not ready), below 60 F (blocked).
+
+The number exists to be comparable across iterations of the SAME coverage, and
+to be capped honestly. It never replaces the blocking finding: the report puts
+blockers above the score, and a capped score always shows the raw value it was
+capped from. Do not tune dimension scores to move the composite.
 
 ## Honesty rules
 

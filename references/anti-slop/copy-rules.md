@@ -42,6 +42,37 @@ calm language; brand surfaces may take more voice, but voice is specificity
 and rhythm, not exclamation marks. Error messages: what happened, why, next
 action, no blame, no jokes in high-stakes contexts.
 
+## Syntactic tells (the shape, not the words)
+
+Vocabulary bans miss copy that contains no banned words but takes a generated
+shape. The strongest of these, and the only entry in this whole registry with
+an external measurement behind it, is negative parallelism
+[slop/negative-parallelism]: rejecting one frame to install another. "It's not
+X, it's Y", "Not X. Y.", "Less X, more Y", "Not only X but also Y", "The
+question isn't X, it's Y". Counts of the construction in large-cap filings rose
+from roughly 50 (2023) to over 200 (2025). The ban holds across sentence
+boundaries and applies with the word "not" absent ("The dashboard looks like a
+reporting tool. It is really a decision filter.").
+
+Its polite disguises fail too: a concession opener ("While X may seem", "At
+first glance", "Most people think") followed within two sentences by a pivot
+("but", "actually", "in reality", "the truth is", "the real", "the hidden").
+Section headings take the same shape and are the most visible case: "The real
+problem", "What actually matters", "Beyond X", "From chaos to clarity".
+Headings name their subject.
+
+Exception, and it is the only one: the construction survives when it corrects a
+specific factual, legal or numeric error ("The file is 12 MB, not 12 GB").
+Everywhere else the repair is mechanical: delete the rejected half, keep the
+positive claim, rewrite as a direct sentence.
+
+Guardrail: avoiding a tell must not create a new one. Do not swing into
+all-staccato sentences, one-line paragraphs everywhere, or copy that reads as a
+list of avoided mistakes, and do not refuse the exact right word because it
+appears on a list. Write normally, then remove what sounds machine-made. These
+entries also expire: tells drift with model generations, so each carries the
+date it was added and gets re-confirmed or deleted on the update cadence.
+
 ## Banned-by-default vocabulary
 
 seamless, powerful, revolutionize/revolutionary, next-generation, cutting-

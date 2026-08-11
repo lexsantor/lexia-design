@@ -298,6 +298,76 @@ const RULES = [
     msg: "Native confirm() dialog",
     fix: "confirm() is legitimate only for unsaved-changes navigation guards. Destructive actions use in-flow two-step confirm (arm -> confirm/cancel) or type-to-confirm.",
   },
+  {
+    id: "system/alpha-value-missing", severity: "serious", confidence: "certain", exts: STYLES,
+    kind: "line",
+    re: /--[\w-]+\s*:\s*(?:oklch|lch|lab|hsl|rgb|color)\([^;]*\)\s*;/g,
+    valueTest: (m) => !/<alpha-value>|\/\s*(?:var\(|<)/.test(m[0]),
+    onlyIf: (c) => /\/(?:\d{1,3})\b|\/\[/.test(c) || /@theme|:root/.test(c),
+    msg: "Color token declared without an alpha placeholder",
+    fix: "Opacity modifiers silently emit nothing on opaque color functions. Declare the alpha slot (e.g. oklch(L C H / <alpha-value>)) before any /opacity utility exists.",
+  },
+  {
+    id: "a11y/reveal-on-essential-content", severity: "critical", confidence: "review", exts: MARKUP,
+    kind: "line",
+    re: /<(?:Reveal|MotionSection|FadeIn|ScrollReveal|AnimateIn|motion\.\w+)\b[^>]*>/g,
+    dedupePerLine: true,
+    onlyIf: (c) => /(privacy|terms|legal|cookie|aviso|politica|pricing|disclaimer)/i.test(c),
+    msg: "Reveal wrapper in a file containing legal, price or contact content",
+    fix: "Reveal wrappers start at opacity 0 and depend on JS. Legal text, prices and contact details must render unconditionally; restrict scroll motion to chrome and decorative sections.",
+  },
+  {
+    id: "motion/lcp-behind-reveal", severity: "serious", confidence: "review", exts: MARKUP,
+    kind: "line",
+    re: /<(?:Reveal|MotionSection|FadeIn|ScrollReveal|AnimateIn)\b(?![^>]*\b(?:immediate|priority)\b)[^>]*>[\s\S]{0,400}?<h1\b/g,
+    msg: "The LCP element (h1/hero) sits inside a reveal wrapper",
+    fix: "The largest element starts at opacity 0: visible flash plus an LCP penalty. Give the reveal primitive an immediate escape hatch and use it above the fold.",
+  },
+  {
+    id: "motion/countup-zero-base", severity: "serious", confidence: "review", exts: SCRIPTY,
+    kind: "line",
+    re: /(?:useState|useRef|useMotionValue|signal)\(\s*0\s*\)/g,
+    onlyIf: (c) => /count[- ]?up|CountUp|animatedNumber|AnimatedNumber|useCounter|odometer/i.test(c),
+    msg: "Count-up animation resting at zero",
+    fix: "It renders 0 on the server, without JS, before scroll and to screen readers. Base state is the real value; animate from zero only below the fold.",
+  },
+  {
+    id: "layout/order-with-asymmetric-tracks", severity: "serious", confidence: "certain", exts: MARKUP,
+    kind: "file",
+    test: (c) => /\border-(?:first|last|none|\d+)\b/.test(c) && /grid-cols-\[[^\]]*(?:\d+(?:px|rem|%)|minmax)[^\]]*1fr[^\]]*\]|grid-cols-\[[^\]]*1fr[^\]]*(?:\d+(?:px|rem|%)|minmax)[^\]]*\]/.test(c),
+    re: /grid-cols-\[[^\]]*\]/,
+    msg: "order-* combined with asymmetric grid tracks",
+    fix: "order moves the item, not the track width: the fixed-size element lands in the fluid track and stretches. Use symmetric tracks, or swap the track definition per breakpoint.",
+  },
+  {
+    id: "i18n/provider-missing-locale", severity: "serious", confidence: "certain", exts: MARKUP,
+    kind: "line",
+    re: /<(?:NextIntlClientProvider|IntlProvider|I18nProvider|LocaleProvider)\b(?![^>]*\blocale\s*=)[^>]*>/g,
+    msg: "Client i18n provider rendered without an explicit locale",
+    fix: "It falls back to the default locale: server HTML is right while every client-rendered locale-dependent element is wrong. Pass locale explicitly.",
+  },
+  {
+    id: "i18n/locale-switch-soft-nav", severity: "serious", confidence: "review", exts: MARKUP,
+    kind: "file",
+    test: (c) => /(?:Language|Locale|Lang)(?:Switch|Switcher|Picker|Toggle|Selector)/.test(c) && /(?:from\s+["']next\/link["']|<Link\b|router\.(?:push|replace))/.test(c),
+    re: /(?:from\s+["']next\/link["']|<Link\b|router\.(?:push|replace))/,
+    msg: "Locale switcher using client-side navigation",
+    fix: "Soft navigation keeps the previous locale in cached context: the URL changes and the language does not. Use a plain anchor so the localized layout remounts.",
+  },
+  {
+    id: "i18n/hardcoded-locale-href", severity: "serious", confidence: "certain", exts: MARKUP,
+    kind: "line",
+    re: /href\s*=\s*["'`]\/(?:es|ca|en|fr|de|it|pt|nl|eu|gl)\//g,
+    msg: "Hardcoded locale segment in an href",
+    fix: "Components that build localized URLs must read the active locale from context; hardcoded segments emit cross-locale links when the layout does not inherit the request locale.",
+  },
+  {
+    id: "slop/negative-parallelism", severity: "moderate", confidence: "review", exts: MARKUP,
+    kind: "line",
+    re: /\b(?:it|this|that)(?:'s|s| is) not (?:just |only |merely |simply )?[^.!?;<>{}]{2,60}[.;,]\s*(?:it|this|that)(?:'s|s| is)\b|\bnot only\b[^.?!<>{}]{2,80}\bbut also\b|\b(?:less|fewer) \w+, more \w+\b|\bstop (?:thinking|doing|building) [^.<>{}]{2,40}\.\s*start\b/gi,
+    msg: "Negative parallelism in interface copy",
+    fix: "The most measured AI writing tell. Delete the rejected half and state the positive claim directly. Legitimate only when correcting a specific factual, legal or numeric error.",
+  },
 ];
 
 /* -------------------------------- helpers --------------------------------- */
@@ -309,14 +379,17 @@ function parseDisables(raw) {
   // Pair every directive with a reason in prose and a decisions.jsonl entry.
   const file = new Set();
   const lines = new Map(); // lineNumber -> Set(ruleIds)
+  // Rule ids are the slash-shaped tokens after the directive; anything after
+  // `--` (or any non-id token) is the human reason and is ignored here.
+  const idsFrom = (s) => (s.split("--")[0].match(/[a-z0-9-]+\/[a-z0-9-]+/g) || []);
   const src = raw.split("\n");
   for (let i = 0; i < src.length; i++) {
-    let m = src[i].match(/lexia-disable-file\s+([\w/,\s-]+)/);
-    if (m) for (const id of m[1].split(",").map((s) => s.trim()).filter(Boolean)) file.add(id);
-    m = src[i].match(/lexia-disable-next-line\s+([\w/,\s-]+)/);
+    let m = src[i].match(/lexia-disable-file\s+(.+)$/);
+    if (m) for (const id of idsFrom(m[1])) file.add(id);
+    m = src[i].match(/lexia-disable-next-line\s+(.+)$/);
     if (m) {
       const set = lines.get(i + 2) || new Set();
-      for (const id of m[1].split(",").map((s) => s.trim()).filter(Boolean)) set.add(id);
+      for (const id of idsFrom(m[1])) set.add(id);
       lines.set(i + 2, set);
     }
   }

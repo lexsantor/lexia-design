@@ -77,6 +77,18 @@ CRITICAL_ACCESSIBILITY_ISSUES = 0).
 - tabindex > 0 is a finding [a11y/tabindex-positive]. Note: 4.1.1 Parsing
   was removed in WCAG 2.2; do not cite it.
 
+## Content that must never depend on JavaScript
+
+Reveal wrappers start at `opacity: 0` and wait for an intersection event.
+Anything a user must be able to read without JS, or through assistive tech
+before scripts settle, renders unconditionally: legal text, consent copy,
+prices, contact details, disclaimers [a11y/reveal-on-essential-content].
+Restrict scroll motion to chrome, navigation and decorative sections. A skip
+link that appears constantly is a bug in the visually-hidden/focus pair
+(usually an ancestor transform or containment defeating it), never a reason to
+delete the affordance: deleting it while leaving the target anchor produces a
+page that looks compliant and is not.
+
 ## Delivery gate
 
 Before delivering, verify at minimum: keyboard walk of the primary flow,

@@ -101,6 +101,25 @@ Format per entry: what it predicts -> apply when -> tension -> how to verify.
 - States: every screen designs empty, sparse, dense, loading, error,
   success, and recovery. No dead ends: always a next step.
 
+## Layout failures that read as design mistakes
+
+- `order` moves the item, not the track [layout/order-with-asymmetric-tracks].
+  On a grid with asymmetric tracks, reordering children drops a fixed-size
+  element into the fluid track where it stretches or pixelates. Use symmetric
+  tracks and reorder freely, or keep source order and swap the track
+  definition per breakpoint.
+- Sticky only sticks inside a parent tall enough to scroll past: a sticky
+  element inside a short sidebar stops sticking the moment that wrapper leaves.
+- Grid and flex items default to automatic minimum width, so a wide table
+  inside a card inside a grid refuses to shrink: horizontal scroll silently
+  stops working and the page grows. `min-w-0` on the item plus an explicit
+  single-column base.
+- Alternate section backgrounds from the data index, not `nth-child`: DOM
+  position counts heroes and interstitials, so the alternation desynchronizes
+  and two adjacent sections share a background.
+- Cards must contrast with their own section surface; a border and a soft
+  shadow do not rescue a card that shares its section's background.
+
 ## Conflict protocol
 
 When heuristics collide (density vs touch targets, minimalism vs

@@ -1,0 +1,18 @@
+/* Eval fixture: color tokens declared without the alpha placeholder, in a
+   codebase that uses opacity modifiers (LD-DS-01). */
+@theme {
+  --canvas: oklch(98% 0.006 250);
+  --surface: oklch(100% 0 0);
+  --ink: oklch(28% 0.03 250);
+  --brand: oklch(62% 0.17 255);
+  --ok-token: oklch(45% 0.02 250 / <alpha-value>);
+}
+
+.overlay {
+  background: var(--ink);
+}
+
+.chip {
+  /* consumer proving the opacity modifiers exist in this project */
+  background: rgb(from var(--brand) r g b / 15%);
+}

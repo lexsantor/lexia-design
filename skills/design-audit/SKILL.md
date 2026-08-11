@@ -38,8 +38,17 @@ them the detector output.
    project's own build/typecheck/lint/tests if present: a red build caps
    PRODUCTION_READINESS at 3.
 3. Render pass. Screenshot key pages at 375/768/1440 (+ both themes).
-   If rendering is impossible, mark visual dimensions "not visually
-   verified": never score screenshots that don't exist.
+   Capture protocol, because full-page captures lie: sections behind
+   scroll reveals render blank below the fold, and programmatic scroll
+   faster than ~500ms per section fires neither the reveal nor lazy
+   loading. Scroll for real with 700-900ms pauses and take VIEWPORT
+   captures. Narrow widths need device-metrics emulation (headless window
+   width bottoms out around 469px, so a "mobile" capture may be desktop).
+   Automation screenshots come back downscaled: grain, glow and motion
+   intensity cannot be judged from them, and saying so is part of the
+   report. If rendering is impossible, mark visual dimensions "not
+   visually verified" and pass `--not-rendered` to the gate: never score
+   screenshots that don't exist.
 4. Agent pass (parallel, disjoint lenses, screenshots + brief as input):
    - ux-auditor: heuristics, accessibility, states, forms, content
      integrity.
@@ -69,13 +78,27 @@ them the detector output.
    decisions.jsonl waivers before flagging known exceptions).
 7. Score 15 dimensions per
    `${CLAUDE_PLUGIN_ROOT}/skills/lexia-design/references/scoring.md`,
-   evidence mandatory, n/a renormalized. Run
+   evidence mandatory, n/a renormalized. Performance is measured against
+   a PRODUCTION build served locally, never a dev server, and speed-index
+   and total-blocking-time are treated as directional only (they swing
+   with machine load); decide on first paint, layout shift and bundle
+   size. Findings that are HTTP response headers (content policy,
+   transport security, frame options) go in a separate "not fixable here"
+   bucket with the deployment owner named, so the score reflects what
+   design and code control. Run
    `node ${CLAUDE_PLUGIN_ROOT}/scripts/lexia-design-score.mjs gate --scores
-   <file>` to record history and get the verdict.
-8. Report. Write `.lexia-design/DESIGN-AUDIT.md` from the template:
-   scores table, findings grouped by severity with file:line + evidence +
-   recommendation + status column, exceptions honored, verdict. In chat:
-   top findings first, no padding.
+   <file>` to record history, compute the LEXIA SCORE and write the
+   report.
+8. Report. The gate writes `.lexia-design/DESIGN-REPORT.md`: the /100
+   table, blockers first, dimensions with weight and evidence, gates.
+   Write `.lexia-design/DESIGN-AUDIT.md` alongside it from the template:
+   findings grouped by severity with file:line + verdict + evidence +
+   recommendation + status column, exceptions honored. In chat: open with
+   the blocking finding, not the score table, and close with ONE
+   recommended next step, not a menu. Label each finding measured (a
+   computed or rendered value with its location) or inferred (judgment),
+   so score movement between audits is attributable to work rather than
+   to a reviewer disagreeing with a prior call.
 
 ## Audit dimensions (what to look at, minimum)
 

@@ -5,7 +5,10 @@
  *
  * Subcommands:
  *   init  [--project-dir .]                       scaffold .lexia-design/ from plugin templates
- *   gate  --scores <file.json> [options]          evaluate thresholds, append history, emit verdict
+ *   gate  --scores <file.json> [options]          evaluate thresholds, append history, emit verdict,
+ *                                                 compute the LEXIA SCORE /100 and write DESIGN-REPORT.md
+ *   report [--project-dir .]                      print the last DESIGN-REPORT.md
+ *   weights                                       print the /100 weighting, caps and bands
  *   history [--project-dir .] [--format text|json] show recorded iterations
  *
  * gate options:
@@ -14,7 +17,10 @@
  *   --regressions <n>         visual regressions vs previous iteration (default 0)
  *   --critical-a11y <n>       unresolved critical accessibility issues (default read from scores file, else 0)
  *   --critical-usability <n>  unresolved critical usability issues (default read from scores file, else 0)
- *   --format text|json        default text
+ *   --fabrications <n>        unverified fabricated content items (default from scores file, else 0)
+ *   --build-broken            build/typecheck failing (caps the score)
+ *   --not-rendered            no visual verification was possible (caps the score)
+ *   --format text|json|report default text
  *
  * Scores file shape:
  *   { "scores": { "TASK_CLARITY": 8, ... 15 dimensions, null = not applicable / not verified },
@@ -36,6 +42,47 @@ const DIMENSIONS = [
   "CONTENT_INTEGRITY", "VISUAL_HIERARCHY", "TYPOGRAPHY", "COLOR_AND_CONTRAST",
   "SPACING_AND_RHYTHM", "RESPONSIVENESS", "SYSTEM_COHERENCE", "DISTINCTIVENESS",
   "MOTION_QUALITY", "PERFORMANCE", "PRODUCTION_READINESS",
+];
+
+// LEXIA SCORE weights. Derived from the plugin's priority order: what protects
+// the user's task, safety and truth weighs more than what expresses identity.
+// The composite is normalized over APPLICABLE dimensions only, so an n/a
+// dimension neither helps nor hurts.
+const WEIGHTS = {
+  TASK_CLARITY: 9,
+  INFORMATION_ARCHITECTURE: 7,
+  USABILITY: 10,
+  ACCESSIBILITY: 10,
+  CONTENT_INTEGRITY: 9,
+  VISUAL_HIERARCHY: 7,
+  TYPOGRAPHY: 6,
+  COLOR_AND_CONTRAST: 6,
+  SPACING_AND_RHYTHM: 5,
+  RESPONSIVENESS: 7,
+  SYSTEM_COHERENCE: 6,
+  DISTINCTIVENESS: 6,
+  MOTION_QUALITY: 4,
+  PERFORMANCE: 6,
+  PRODUCTION_READINESS: 7,
+};
+
+// Hard ceilings. An aggregate number must never let a blocker pass unnoticed:
+// the cap is applied AFTER the weighted average, and the reason is printed.
+const CAPS = [
+  { when: (c) => c.contentFabrications > 0, cap: 49, why: "unverified fabricated content present" },
+  { when: (c) => c.criticalA11y > 0, cap: 59, why: "critical accessibility issue open" },
+  { when: (c) => c.criticalUsability > 0, cap: 59, why: "critical usability issue open" },
+  { when: (c) => c.buildBroken, cap: 59, why: "build/typecheck failing" },
+  { when: (c) => c.regressions > 0, cap: 79, why: "visual regression vs previous iteration" },
+  { when: (c) => c.notVisuallyVerified, cap: 89, why: "not visually verified (no render)" },
+];
+
+const BANDS = [
+  { min: 90, grade: "A", label: "Ship" },
+  { min: 80, grade: "B", label: "Ship with named follow-ups" },
+  { min: 70, grade: "C", label: "Usable, material gaps" },
+  { min: 60, grade: "D", label: "Not ready" },
+  { min: 0, grade: "F", label: "Blocked" },
 ];
 
 const DEFAULT_THRESHOLDS = {
@@ -67,6 +114,113 @@ function loadThresholds(projectDir) {
   }
 }
 
+/* ------------------------------ LEXIA SCORE ------------------------------- */
+
+function computeLexiaScore(scores, ctx) {
+  const applicable = DIMENSIONS.filter((d) => scores[d] !== null);
+  const weightSum = applicable.reduce((s, d) => s + WEIGHTS[d], 0);
+  const raw = weightSum
+    ? applicable.reduce((s, d) => s + scores[d] * WEIGHTS[d], 0) / weightSum * 10
+    : 0;
+  let score = Math.round(raw * 10) / 10;
+  const capsApplied = [];
+  for (const c of CAPS) {
+    if (c.when(ctx) && score > c.cap) { score = c.cap; capsApplied.push(c.why); }
+    else if (c.when(ctx)) capsApplied.push(`${c.why} (already below cap ${c.cap})`);
+  }
+  const band = BANDS.find((b) => score >= b.min);
+  return {
+    score: Math.round(score * 10) / 10,
+    raw: Math.round(raw * 10) / 10,
+    capped: capsApplied.length > 0 && Math.round(raw * 10) / 10 > score,
+    capsApplied,
+    grade: band.grade,
+    label: band.label,
+    applicable: applicable.length,
+    weightSum,
+  };
+}
+
+function bar(value10) {
+  if (value10 === null) return "n/a";
+  const filled = Math.round(value10);
+  return "#".repeat(filled) + "-".repeat(10 - filled);
+}
+
+function dimensionRows(scores, notes, prevScores) {
+  return DIMENSIONS.map((d) => {
+    const v = scores[d];
+    const w = WEIGHTS[d];
+    const contribution = v === null ? null : Math.round((v * w) / 10 * 10) / 10;
+    const prev = prevScores && typeof prevScores[d] === "number" ? prevScores[d] : null;
+    const delta = v !== null && prev !== null ? Math.round((v - prev) * 10) / 10 : null;
+    return {
+      dimension: d,
+      score: v,
+      weight: w,
+      points: contribution,
+      delta,
+      evidence: (notes && notes[d]) || "",
+    };
+  });
+}
+
+function renderReport(payload) {
+  const { lexia, rows, meta, gates, verdict, blockers, coverage, capsApplied } = payload;
+  const L = [];
+  L.push(`# Design report — ${meta.project || "project"}`);
+  L.push("");
+  if (blockers.length) {
+    L.push(`> BLOCKING: ${blockers.length} issue(s) must be resolved before this ships.`);
+    for (const b of blockers.slice(0, 5)) L.push(`> - ${b}`);
+    L.push("");
+  } else {
+    L.push("> No blocking issues open.");
+    L.push("");
+  }
+  L.push(`## LEXIA SCORE: ${lexia.score} / 100 — ${lexia.grade} (${lexia.label})`);
+  L.push("");
+  L.push(`| | |`);
+  L.push(`|---|---|`);
+  L.push(`| Iteration | ${meta.iteration} |`);
+  L.push(`| Coverage | ${coverage || "UNSPECIFIED — scores are not comparable across audits"} |`);
+  L.push(`| Dimensions scored | ${lexia.applicable} of ${DIMENSIONS.length} |`);
+  L.push(`| Weighted raw | ${lexia.raw} / 100 |`);
+  L.push(`| Delta vs previous | ${meta.delta === null || meta.delta === undefined ? "first audit" : (meta.delta >= 0 ? "+" : "") + meta.delta} |`);
+  L.push(`| Verdict | ${verdict} |`);
+  L.push("");
+  if (capsApplied.length) {
+    L.push(`Score capped: ${capsApplied.join("; ")}. The raw weighted value was ${lexia.raw}.`);
+    L.push("");
+  }
+  L.push("## Dimensions");
+  L.push("");
+  L.push("| # | Dimension | Score | Weight | Points | Δ | Evidence |");
+  L.push("|---|---|---|---|---|---|---|");
+  rows.forEach((r, i) => {
+    const s = r.score === null ? "n/a" : `${r.score}/10`;
+    const p = r.points === null ? "—" : `${r.points}`;
+    const d = r.delta === null ? "—" : (r.delta > 0 ? `+${r.delta}` : `${r.delta}`);
+    L.push(`| ${i + 1} | ${r.dimension} | ${s} | ${r.weight} | ${p} | ${d} | ${r.evidence.replace(/\|/g, "\\|").slice(0, 120)} |`);
+  });
+  L.push(`| | **TOTAL (applicable)** | | ${lexia.weightSum} | **${lexia.raw}** | | |`);
+  L.push("");
+  L.push("## Gates");
+  L.push("");
+  L.push("| Gate | Value | Threshold | Result |");
+  L.push("|---|---|---|---|");
+  for (const [name, g] of Object.entries(gates)) {
+    const bound = "min" in g ? `>= ${g.min}` : `<= ${g.max}`;
+    L.push(`| ${name} | ${g.note ?? g.value} | ${bound} | ${g.pass ? "PASS" : "FAIL"} |`);
+  }
+  L.push("");
+  L.push("Scores are judgment anchored to evidence, not measurement. Dimensions");
+  L.push("marked n/a are excluded and the total renormalized. A deeper audit");
+  L.push("scoring lower than a shallower one is not a regression: compare only");
+  L.push("across equal coverage.");
+  return L.join("\n");
+}
+
 function readHistory(projectDir) {
   const p = join(projectDir, ".lexia-design", "evaluation-history.jsonl");
   if (!existsSync(p)) return [];
@@ -88,6 +242,7 @@ function init(args) {
     ["DESIGN-BRIEF.md", "DESIGN-BRIEF.md"],
     ["DESIGN-SYSTEM.md", "DESIGN-SYSTEM.md"],
     ["DESIGN-AUDIT.md", "DESIGN-AUDIT.md"],
+    ["DESIGN-REPORT.md", "DESIGN-REPORT.md"],
     ["project-preferences.json", "project-preferences.json"],
   ];
   const created = [];
@@ -143,10 +298,17 @@ function gate(args) {
   const criticalA11y = parseInt(arg(args, "--critical-a11y", String(input.criticalA11y ?? 0)), 10);
   const criticalUsability = parseInt(arg(args, "--critical-usability", String(input.criticalUsability ?? 0)), 10);
 
+  const contentFabrications = parseInt(arg(args, "--fabrications", String(input.contentFabrications ?? 0)), 10);
+  const buildBroken = args.includes("--build-broken") || input.buildBroken === true;
+  const notVisuallyVerified = args.includes("--not-rendered") || input.notVisuallyVerified === true;
+
   const applicable = DIMENSIONS.filter((d) => scores[d] !== null);
   const total = applicable.length
     ? Math.round((applicable.reduce((s, d) => s + scores[d], 0) / applicable.length) * 100) / 100
     : 0;
+  const lexia = computeLexiaScore(scores, {
+    criticalA11y, criticalUsability, regressions, contentFabrications, buildBroken, notVisuallyVerified,
+  });
 
   const gates = {
     total: { value: total, min: t.MIN_TOTAL_SCORE, pass: total >= t.MIN_TOTAL_SCORE },
@@ -180,8 +342,9 @@ function gate(args) {
 
   const entry = {
     ts: new Date().toISOString(),
-    iteration, scores, total, delta, coverage,
-    criticalA11y, criticalUsability, regressions,
+    iteration, scores, total, lexiaScore: lexia.score, grade: lexia.grade, delta, coverage,
+    criticalA11y, criticalUsability, regressions, contentFabrications,
+    buildBroken: buildBroken || undefined, notVisuallyVerified: notVisuallyVerified || undefined,
     gates: Object.fromEntries(Object.entries(gates).map(([k, g]) => [k, g.pass])),
     verdict,
     improved: [...improved], regressed: [...regressed],
@@ -191,9 +354,28 @@ function gate(args) {
   mkdirSync(dir, { recursive: true });
   appendFileSync(join(dir, "evaluation-history.jsonl"), JSON.stringify(entry) + "\n");
 
+  // Always emit the report table: the deliverable is the report, not the exit code.
+  const blockers = [];
+  if (contentFabrications) blockers.push(`${contentFabrications} unverified fabricated content item(s)`);
+  if (criticalA11y) blockers.push(`${criticalA11y} critical accessibility issue(s)`);
+  if (criticalUsability) blockers.push(`${criticalUsability} critical usability issue(s)`);
+  if (buildBroken) blockers.push("build or typecheck failing");
+  if (regressions) blockers.push(`${regressions} visual regression(s) vs the previous iteration`);
+  const reportMd = renderReport({
+    lexia,
+    rows: dimensionRows(scores, input.notes, prev?.scores),
+    meta: { project: input.project, iteration, delta },
+    gates, verdict, blockers, coverage, capsApplied: lexia.capsApplied,
+  });
+  const reportPath = join(dir, "DESIGN-REPORT.md");
+  writeFileSync(reportPath, reportMd + "\n");
+
   if (format === "json") {
-    console.log(JSON.stringify({ entry, thresholds: t }, null, 2));
+    console.log(JSON.stringify({ entry, lexia, thresholds: t, reportPath }, null, 2));
+  } else if (format === "report") {
+    console.log(reportMd);
   } else {
+    console.log(`LEXIA SCORE ${lexia.score}/100 (${lexia.grade} — ${lexia.label})${lexia.capped ? ` [capped from ${lexia.raw}]` : ""}`);
     console.log(`Iteration ${iteration} — TOTAL ${total} (${applicable.length}/15 dims applicable${delta !== null ? `, delta ${delta >= 0 ? "+" : ""}${delta}` : ""})`);
     for (const [name, g] of Object.entries(gates)) {
       const bound = "min" in g ? `>= ${g.min}` : `<= ${g.max}`;
@@ -205,6 +387,7 @@ function gate(args) {
     console.log(`VERDICT: ${verdict}`);
     if (verdict === "stop-max-iterations") console.log("Report remaining gaps honestly; do not keep iterating.");
     if (verdict === "stop-no-progress") console.log("No measurable improvement over the previous iteration; stop and report.");
+    console.log(`Report written to ${reportPath} (use --format report to print the table).`);
   }
   process.exit(verdict === "stop-converged" ? 0 : verdict === "continue" ? 1 : 2);
 }
@@ -225,13 +408,38 @@ function historyCmd(args) {
 
 /* ---------------------------------- main ---------------------------------- */
 
+function reportCmd(args) {
+  const projectDir = resolve(arg(args, "--project-dir", "."));
+  const p = join(projectDir, ".lexia-design", "DESIGN-REPORT.md");
+  if (!existsSync(p)) {
+    console.error("report: no DESIGN-REPORT.md yet. Run `gate --scores <file>` first.");
+    process.exit(3);
+  }
+  console.log(readFileSync(p, "utf8"));
+}
+
+function weightsCmd() {
+  console.log("dimension | weight | share of 100");
+  const sum = Object.values(WEIGHTS).reduce((a, b) => a + b, 0);
+  for (const [d, w] of Object.entries(WEIGHTS)) {
+    console.log(`${d} | ${w} | ${(w / sum * 100).toFixed(1)}%`);
+  }
+  console.log(`\ntotal weight ${sum}; the composite renormalizes over applicable dimensions only.`);
+  console.log("\ncaps (applied after the weighted average):");
+  for (const c of CAPS) console.log(`  <= ${c.cap} when ${c.why}`);
+  console.log("\nbands:");
+  for (const b of BANDS) console.log(`  >= ${b.min} ${b.grade} (${b.label})`);
+}
+
 const [cmd, ...rest] = process.argv.slice(2);
 try {
   if (cmd === "init") init(rest);
   else if (cmd === "gate") gate(rest);
   else if (cmd === "history") historyCmd(rest);
+  else if (cmd === "report") reportCmd(rest);
+  else if (cmd === "weights") weightsCmd();
   else {
-    console.error("Usage: lexia-design-score.mjs <init|gate|history> [options]  (see file header)");
+    console.error("Usage: lexia-design-score.mjs <init|gate|history|report|weights> [options]  (see file header)");
     process.exit(3);
   }
 } catch (err) {

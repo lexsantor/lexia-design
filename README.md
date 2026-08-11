@@ -16,7 +16,10 @@ Built as an original synthesis of studied sources (see `SOURCES.md` and
 9. Motion and delight  10. Implementation convenience
 
 One standing exception: an explicit user brief commitment ("the brief
-wins") outranks the plugin's aesthetic preferences.
+wins") outranks the plugin's aesthetic preferences — never its usability
+evidence, accessibility or content truth. Brand-owned items (logo, CTA
+channel, contact routing, pricing, legal copy) are proposals requiring
+sign-off, not autonomous fixes.
 
 ## Components
 
@@ -27,9 +30,10 @@ wins") outranks the plugin's aesthetic preferences.
 - Hooks: PostToolUse deterministic detector on UI file writes (advisory,
   never blocks); Stop reminder for unresolved critical findings.
 - Scripts (`scripts/`, zero dependencies, Node >= 18):
-  `lexia-design-audit.mjs` (36 file rules + 5 project rules, WCAG color
+  `lexia-design-audit.mjs` (45 file rules + 5 project rules, WCAG color
   math, inline `lexia-disable` waivers),
-  `lexia-design-score.mjs` (init / gate / history, coverage-aware),
+  `lexia-design-score.mjs` (init / gate / report / weights / history,
+  LEXIA SCORE /100, coverage-aware),
   `lexia-design-update.mjs` (source drift, metadata only).
 - Knowledge (`references/`): heuristics, anti-slop registry, WCAG 2.2
   checklists, motion principles, GSAP playbook, 12 visual directions,
@@ -103,14 +107,28 @@ Deliberate deviations are waived inline
 (`// lexia-disable-next-line <rule-id>` or `lexia-disable-file`) paired
 with a `decisions.jsonl` entry.
 
-## Convergence gate
+## Convergence gate and the /100 report
 
 ```bash
-node scripts/lexia-design-score.mjs gate --scores scores.json
+node scripts/lexia-design-score.mjs gate --scores scores.json            # gate + report
+node scripts/lexia-design-score.mjs gate --scores scores.json --format report
+node scripts/lexia-design-score.mjs report        # print the last report
+node scripts/lexia-design-score.mjs weights       # weights, caps, bands
 node scripts/lexia-design-score.mjs history
 ```
 
-Defaults: MAX_ITERATIONS 4, MIN_TOTAL 8.5, MIN_DISTINCTIVENESS 7.5, zero
+Every run ends with a report table: blocking findings first, then
+`LEXIA SCORE X/100` with its grade and the audit's coverage, then the 15
+dimensions with weight, points, delta and evidence, then the gates. The
+composite is a weighted mean renormalized over applicable dimensions, so
+an n/a dimension neither helps nor hurts.
+
+The score is capped so it cannot hide a blocker, and a capped score always
+shows the raw value it came from: fabricated content caps at 49, a critical
+accessibility or usability issue (or a failing build) at 59, a visual
+regression at 79, and an unrendered audit at 89.
+
+Gate defaults: MAX_ITERATIONS 4, MIN_TOTAL 8.5, MIN_DISTINCTIVENESS 7.5, zero
 critical a11y/usability, zero regressions. Override per project in
 `.lexia-design/project-preferences.json`.
 
@@ -161,7 +179,7 @@ lexia-design/
 ├── references/{heuristics,anti-slop,accessibility,motion,visual-directions,component-libraries}/
 ├── evals/{cases,expected,fixtures,run-evals.mjs}
 ├── templates/
-├── docs/UPDATING.md
+├── docs/{UPDATING.md, learnings/}
 ├── SOURCES.md · sources.lock.json · CHANGELOG.md · CONTRIBUTING.md · LIMITATIONS.md · LICENSE
 ```
 

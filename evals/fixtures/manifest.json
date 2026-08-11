@@ -62,6 +62,29 @@
       "expectRules": ["correctness/server-local-midnight"]
     },
     {
+      "file": "tokens-broken.css",
+      "expectRules": ["system/alpha-value-missing"]
+    },
+    {
+      "file": "legal-page.tsx",
+      "expectRules": [
+        "a11y/reveal-on-essential-content",
+        "motion/lcp-behind-reveal",
+        "layout/order-with-asymmetric-tracks",
+        "i18n/provider-missing-locale",
+        "i18n/hardcoded-locale-href",
+        "slop/negative-parallelism"
+      ]
+    },
+    {
+      "file": "LocaleSwitcher.tsx",
+      "expectRules": ["i18n/locale-switch-soft-nav"]
+    },
+    {
+      "file": "stat-counter.tsx",
+      "expectRules": ["motion/countup-zero-base"]
+    },
+    {
       "dir": "theme-desync",
       "expectRules": [
         "system/dark-variant-desync",

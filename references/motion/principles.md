@@ -101,6 +101,22 @@ easing, origin, interruption, GPU load, timing asymmetry; polish last.
 - Validate on a mid-range Android with 4x CPU throttle and on iOS Low
   Power Mode. 60fps or reduce.
 
+## Reveal wrappers have two hard exemptions
+
+- The LCP element never waits for an observer [motion/lcp-behind-reveal]. The
+  hero heading or hero media inside a reveal starts at opacity 0: visible
+  flash plus a measurable LCP penalty. Reveal primitives ship an `immediate`
+  escape hatch and above-the-fold content uses it.
+- Essential content never sits behind a reveal (legal, prices, contact); see
+  `../accessibility/wcag-checklist.md`.
+
+Value animations carry a third rule: a count-up whose base state is zero
+renders "0" on the server, without JS, before scroll, and to screen readers
+[motion/countup-zero-base]. Base state is the real value; animate from zero
+only for instances that enter below the fold. Under reduced motion, value
+animations render the final value instantly: the information is the number,
+and the motion carries none.
+
 ## Reduced motion (mandatory)
 
 Reduced means gentler, not zero: keep comprehension-aiding opacity/color

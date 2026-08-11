@@ -42,6 +42,14 @@ first: `${CLAUDE_PLUGIN_ROOT}/references/visual-directions/direction-protocol.md
    moment disappears [system/accent-ink-indistinct]. Shadows are themed
    tokens tinted toward the canvas hue, never hardcoded black rgba()
    [system/hardcoded-shadow-color].
+   Token syntax fails silently, so verify it before redesigning anything:
+   a color declared as an opaque color function breaks every opacity
+   modifier (the utility compiles to nothing), which surfaces as three
+   unrelated "design bugs" — invisible text, a missing overlay, dividers
+   at the wrong weight. Declare the alpha slot in every color token
+   before any /opacity utility exists [system/alpha-value-missing]. Same
+   class of failure: arbitrary `var()` classes do not compile in current
+   majors, so consume the generated utilities instead.
    Theming mechanics: if the app toggles theme via [data-theme] or a
    class, re-key the framework's dark variant to that mechanism
    (Tailwind 4: `@custom-variant dark

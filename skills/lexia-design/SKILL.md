@@ -30,7 +30,15 @@ frontend with a distinctive, accessible, truthful interface.
 
 When two principles collide, the lower number wins. One standing
 exception: an explicit user brief commitment ("the brief wins") outranks
-rules 7-9 and any anti-default preference in this plugin.
+rules 7-9 and any anti-default preference in this plugin. Its limits: the
+brief overrides this plugin's TASTE, never usability evidence,
+accessibility or content truth, and never arithmetic — when a requested
+change provably cannot fix the problem the user stated, say so once,
+concretely, then execute the request anyway. Brand-owned items (logo,
+CTA destination channel, contact routing, pricing, legal copy) are
+proposals requiring the owner's sign-off, never autonomous fixes: state
+that boundary before starting, and separate applied fixes from flagged
+proposals in the report.
 
 ## Workflow
 
@@ -65,15 +73,27 @@ thresholds, stop conditions). Compressed:
    visual-critic, motion-engineer), score with the gate script, fix top-3
    by impact, compare, stop at thresholds or no-progress. Use the
    design-audit skill for the full audit procedure.
-6. Deliver: implementation + report (direction, dials, scores with
-   evidence, remaining issues, exceptions) + updated `.lexia-design/`
-   memory.
+6. Deliver: implementation + THE REPORT + updated `.lexia-design/`
+   memory. Every run ends with the report table, whatever the verdict:
+   blocking findings first, then `LEXIA SCORE X/100` with its grade and
+   coverage, then the 15-dimension table (score, weight, points, delta,
+   evidence), then gates, then direction/dials/exceptions/known issues,
+   then one recommended next step. The gate script writes it to
+   `.lexia-design/DESIGN-REPORT.md`; reproduce it in the final message.
+   Never lead with the score, and never show a score for something that
+   was not verified.
 
 ## Hard implementation rules
 
 - Respect the existing stack and conventions; TypeScript if the project
   uses it; reuse existing components; no new dependencies without the
   justification protocol; no premature abstractions.
+- Tier every edit by blast radius before making it. Low: copy, one local
+  component, styles scoped to it. Medium: shared components, layout,
+  navigation, form logic, page structure. High: design tokens, global
+  styles, route structure, dependencies, deletions and renames. High-tier
+  edits are listed and approved first, never bundled into a polish pass;
+  enumerate the consumers of anything shared before touching it.
 - No placeholders, no `TODO: implement`, no mocks presented as real.
 - Semantic elements (no clickable divs), visible focus, working zoom and
   paste, no color-only signals, no emoji or improvised Unicode as icons.
