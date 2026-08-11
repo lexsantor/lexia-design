@@ -362,6 +362,20 @@ const RULES = [
     fix: "Components that build localized URLs must read the active locale from context; hardcoded segments emit cross-locale links when the layout does not inherit the request locale.",
   },
   {
+    id: "i18n/tolocalestring-no-locale", severity: "moderate", confidence: "review", exts: SCRIPTY,
+    kind: "line", dedupePerLine: true,
+    re: /\.toLocaleString\(\s*\)|\.toLocaleDateString\(\s*\)|new\s+Intl\.(?:NumberFormat|DateTimeFormat)\(\s*(?:\)|undefined)/g,
+    msg: "Locale-aware formatting without an explicit locale",
+    fix: "Thread the resolved locale into every formatter. Animated counters are the usual leak: intermediate values generated in JS render with the browser default, not the active locale. In single-locale projects, record the browser-default choice as a decision.",
+  },
+  {
+    id: "i18n/emoji-flag", severity: "moderate", confidence: "certain", exts: ALL_EXTS,
+    kind: "line", dedupePerLine: true,
+    re: /[\u{1F1E6}-\u{1F1FF}]{2}/gu,
+    msg: "Emoji flag as a locale indicator",
+    fix: "Emoji flags do not render on all platforms, cannot be styled, and cannot express sub-national flags. Draw locale indicators as inline SVG.",
+  },
+  {
     id: "slop/negative-parallelism", severity: "moderate", confidence: "review", exts: MARKUP,
     kind: "line",
     re: /\b(?:it|this|that)(?:'s|s| is) not (?:just |only |merely |simply )?[^.!?;<>{}]{2,60}[.;,]\s*(?:it|this|that)(?:'s|s| is)\b|\bnot only\b[^.?!<>{}]{2,80}\bbut also\b|\b(?:less|fewer) \w+, more \w+\b|\bstop (?:thinking|doing|building) [^.<>{}]{2,40}\.\s*start\b/gi,
@@ -875,6 +889,67 @@ function projectRules(files, contentsById, root) {
     }
   } catch { /* unparseable package.json — skip */ }
 
+  // i18n message catalogs: leaf/parent key collisions and coverage gaps.
+  // Flat dotted-key catalogs: a key that is both a string and a prefix of
+  // deeper keys throws at render (field learning). Coverage: a secondary
+  // locale far below the default reads as broken, not multilingual.
+  try {
+    const catalogDirs = [];
+    const scanForCatalogs = (dir, depth) => {
+      if (depth > 3) return;
+      for (const e of readdirSync(dir, { withFileTypes: true })) {
+        if (!e.isDirectory()) continue;
+        if (/^(node_modules|\.git|dist|build|out|coverage)$/.test(e.name)) continue;
+        const p = join(dir, e.name);
+        if (/^(messages|locales|i18n|lang)$/i.test(e.name)) catalogDirs.push(p);
+        else scanForCatalogs(p, depth + 1);
+      }
+    };
+    scanForCatalogs(root, 0);
+    for (const dir of catalogDirs) {
+      const jsons = readdirSync(dir).filter((f) => f.endsWith(".json"));
+      const keyCounts = new Map();
+      for (const jf of jsons) {
+        const fp = join(dir, jf);
+        let data;
+        try { data = JSON.parse(readFileSync(fp, "utf8")); } catch { continue; }
+        const leaves = [];
+        const walkKeys = (obj, prefix) => {
+          for (const [k, v] of Object.entries(obj)) {
+            const path = prefix ? `${prefix}.${k}` : k;
+            if (v && typeof v === "object") walkKeys(v, path);
+            else leaves.push(path);
+          }
+        };
+        walkKeys(data, "");
+        keyCounts.set(fp, leaves.length);
+        const leafSet = new Set(leaves);
+        const collision = leaves.find((l) => [...leafSet].some((o) => o !== l && o.startsWith(l + ".")));
+        if (collision) {
+          findings.push({
+            id: "i18n/key-leaf-object-collision", severity: "serious", confidence: "certain",
+            file: fp, line: 1, evidence: `"${collision}" is both a string and a namespace prefix`,
+            msg: "Translation key is both leaf and parent",
+            fix: "A key used as a string cannot also become an object namespace: the collision throws at render. Namespace by domain instead of nesting under an existing leaf.",
+          });
+        }
+      }
+      if (keyCounts.size >= 2) {
+        const max = Math.max(...keyCounts.values());
+        for (const [fp, n] of keyCounts) {
+          if (max >= 10 && n < max * 0.9) {
+            findings.push({
+              id: "i18n/locale-coverage-gap", severity: "moderate", confidence: "review",
+              file: fp, line: 1, evidence: `${n} keys vs ${max} in the fullest catalog (${Math.round((n / max) * 100)}%)`,
+              msg: "Secondary locale far behind the default",
+              fix: "Ship one complete locale plus deliberately labeled stubs. Partial locales produce mixed-language screens that read as broken rather than multilingual.",
+            });
+          }
+        }
+      }
+    }
+  } catch { /* unreadable catalog dirs — skip */ }
+
   return findings;
 }
 
@@ -985,7 +1060,7 @@ function listRules() {
   for (const r of RULES) {
     console.log(`${r.id} | ${r.severity} | ${r.confidence} | ${[...r.exts].join(",")}`);
   }
-  console.log(`\n${RULES.length} file-level rules + 10 project-level rules (project/no-reduced-motion-anywhere, system/off-token-colors, system/dark-variant-desync, system/near-duplicate-tokens, system/accent-ink-indistinct, system/native-control-in-app-layer, system/hand-rolled-table, system/orphan-primitive, system/duplicate-primitive, system/design-gate-not-wired)`);
+  console.log(`\n${RULES.length} file-level rules + 12 project-level rules (project/no-reduced-motion-anywhere, system/off-token-colors, system/dark-variant-desync, system/near-duplicate-tokens, system/accent-ink-indistinct, system/native-control-in-app-layer, system/hand-rolled-table, system/orphan-primitive, system/duplicate-primitive, system/design-gate-not-wired, i18n/key-leaf-object-collision, i18n/locale-coverage-gap)`);
   console.log(`Inline waivers: lexia-disable-file <rule-id> | lexia-disable-next-line <rule-id> (comment; pair with a decisions.jsonl entry)`);
 }
 

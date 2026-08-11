@@ -4,6 +4,51 @@ All notable changes to lexia-design. Format: Keep a Changelog; versioning:
 semver. Rule changes should cite the observed failure or source update that
 motivated them (changelog-driven hardening).
 
+## [0.6.0] - 2026-08-11
+
+Tier 4 of the learning-database integration: new capability, not
+refinement. AI-native surfaces enter as a first-class category, i18n goes
+beyond the correctness triad, and two workflow learnings close the loop
+between cycles.
+
+### Added
+
+- `references/production/ai-surfaces.md` (LD-AI-01/02): the extraction
+  contract - structured output with per-field confidence, below-threshold
+  fields marked and focused, everything editable BEFORE applying, one
+  explicit apply action - plus the demo-for-failure protocol
+  (pre-extracted showcase, idempotent reset, visible demo-status strip)
+  verified by RENDERED values, not by records existing. Wired into
+  surface classification (new AI-surface subtype) and the audit skill.
+- 4 fixture-proven i18n detector rules (64 file + 12 project = 76 total):
+  - `i18n/tolocalestring-no-locale` - formatters and animated counters
+    without an explicit locale (LD-I18N-04)
+  - `i18n/emoji-flag` - regional-indicator pairs as locale UI (LD-I18N-10)
+  - `i18n/key-leaf-object-collision` - a translation key that is both
+    string and namespace prefix; throws at render (LD-I18N-05, project)
+  - `i18n/locale-coverage-gap` - a secondary catalog under 90% of the
+    fullest one (LD-I18N-09, project)
+- Fixtures: `counter-format.ts`, `i18n-catalog/` (deep), emoji flag in
+  `LocaleSwitcher.tsx`
+- Trajectory notes (LD-WF-06): every closed cycle appends to
+  `.lexia-design/TRAJECTORY.md` - regressions, reapplied fixes, false
+  positives, what to do FIRST next time, and the cleaner prompt for the
+  next attempt. Scaffolded by `score init`; the session-start read
+  protocol honors the last entry. Decisions and scores record outcomes;
+  this records the path.
+- Reference set at first run (LD-WF-07): the orchestrator asks once for
+  the user's real examples, audience and outcome data, stored in
+  project-preferences.json, so audits judge against the user's standard
+  instead of a generic one. Declining is recorded and never re-asked.
+- i18n reference updated with the four new rule IDs.
+
+### Changed
+
+- README: counts refreshed, per-family rule counts in the detector table,
+  AI-surfaces row in the knowledge base, TRAJECTORY.md in the memory
+  tree, score bands as a text ladder. All content remains selectable,
+  indexable text by policy (see 2026-08-11 revert).
+
 ## [0.5.0] - 2026-08-11
 
 Tier 3 of the learning-database integration: the syntactic copy layer.

@@ -42,12 +42,14 @@ every test passes. All three were found in shipped bilingual sites.
 
 ## Scoping and structure
 
-- Ship one complete locale before three partial ones. Partial locales produce
+- Ship one complete locale before three partial ones
+  [i18n/locale-coverage-gap]. Partial locales produce
   mixed-language screens, which read as broken rather than multilingual.
 - Scope namespaces by surface (nav, hero, pricing, footer), not one flat bag:
   a component pulls only its own strings, collisions stay local, and an
   untranslated area shows up as a whole missing namespace.
-- A key cannot be both a leaf string and a parent object. The collision throws
+- A key cannot be both a leaf string and a parent object
+  [i18n/key-leaf-object-collision]. The collision throws
   at render, so the component breaks in production with an opaque message.
 - Long-form content (legal, docs, catalog entries) leaves the message catalog
   for typed per-locale modules: catalogs handle short strings and handle nested
@@ -58,8 +60,10 @@ every test passes. All three were found in shipped bilingual sites.
 
 ## Formatting
 
-- Counters, stats, prices and dates format with the RESOLVED active locale,
+- Counters, stats, prices and dates format with the RESOLVED active locale
+  [i18n/tolocalestring-no-locale],
   never a hardcoded one and never the browser default. Animated counters are
   the usual leak because intermediate values are generated in JS.
-- Locale indicators are inline SVG, never emoji flags: emoji do not render on
+- Locale indicators are inline SVG, never emoji flags [i18n/emoji-flag]:
+  emoji do not render on
   all platforms, cannot be styled, and cannot express sub-national flags.

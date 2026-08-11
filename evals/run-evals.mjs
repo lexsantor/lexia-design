@@ -63,6 +63,8 @@ function detectorRuleIds() {
   ids.add("system/orphan-primitive");
   ids.add("system/duplicate-primitive");
   ids.add("system/design-gate-not-wired");
+  ids.add("i18n/key-leaf-object-collision");
+  ids.add("i18n/locale-coverage-gap");
   return ids;
 }
 

@@ -256,6 +256,11 @@ function init(args) {
     const target = join(dir, f);
     if (!existsSync(target)) { writeFileSync(target, ""); created.push(f); }
   }
+  const traj = join(dir, "TRAJECTORY.md");
+  if (!existsSync(traj)) {
+    writeFileSync(traj, "# Trajectory\n\nOne note per closed cycle: regressions, reapplied fixes, false\npositives, what to do first next time, and the cleaner prompt for the\nnext attempt. Newest entry last; read the last entry at session start.\n");
+    created.push("TRAJECTORY.md");
+  }
   console.log(created.length ? `Initialized .lexia-design/ (${created.join(", ")})` : ".lexia-design/ already complete; nothing overwritten.");
 }
 

@@ -16,7 +16,7 @@ export function LocaleSwitcher({ current }: { current: string }) {
           href={pathname.replace(/^\/[a-z]{2}/, `/${locale}`)}
           aria-current={locale === current ? "true" : undefined}
         >
-          {locale.toUpperCase()}
+          {locale === "es" ? "🇪🇸" : "🇪🇸"} {locale.toUpperCase()}
         </Link>
       ))}
     </nav>

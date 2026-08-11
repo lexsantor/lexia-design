@@ -1,0 +1,14 @@
+{
+  "nav.home": "Home",
+  "nav.pricing": "Pricing",
+  "nav.contact": "Contact",
+  "hero.title": "Ship interfaces that hold up",
+  "hero.subtitle": "An audit loop for coding agents",
+  "cta.label": "Start now",
+  "cta.label.primary": "Start free",
+  "footer.legal": "Legal notice",
+  "footer.privacy": "Privacy",
+  "form.email": "Email address",
+  "form.submit": "Send",
+  "form.error.required": "This field is required"
+}

@@ -14,6 +14,13 @@
     "MOTION_INTENSITY": null,
     "VISUAL_DENSITY": null
   },
+  "referenceSet": {
+    "$doc": "The user's standard, collected at first run (LD-WF-07). Audits judge against these, not a generic default. 'declined' true stops the first-run prompt.",
+    "examples": [],
+    "audience": "",
+    "outcomeData": "",
+    "declined": false
+  },
   "dependencyBudget": {
     "allowNewRuntimeDeps": true,
     "notes": "Every new runtime dependency still requires the written justification protocol."

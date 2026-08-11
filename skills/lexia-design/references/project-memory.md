@@ -26,13 +26,20 @@ project root. Create with:
 - evaluation-history.jsonl: appended by lexia-design-score.mjs; scores,
   gates, verdicts per iteration. Never hand-edit.
 - project-preferences.json: thresholds and dial overrides, hook
-  preferences, dependency budget. Read by scripts and skills.
+  preferences, dependency budget, and the user's reference set
+  (examples, audience, outcome data) collected at first run. Read by
+  scripts and skills.
+- TRAJECTORY.md: one short note per closed cycle - regressions,
+  reapplied fixes, false positives, what to do first next time, and a
+  cleaner prompt for the next attempt. Records the path, not the
+  outcome.
 
 ## Read protocol (session start)
 
 1. If .lexia-design/ exists: read DESIGN-BRIEF.md and DESIGN-SYSTEM.md
    fully; scan the last ~20 lines of each .jsonl; load
-   project-preferences.json.
+   project-preferences.json; read the LAST entry of TRAJECTORY.md and
+   honor its "do first next time" line before planning the cycle.
 2. Honor prior decisions unless the user changes them; when a new request
    contradicts a recorded decision, surface the conflict in one sentence
    instead of silently switching.

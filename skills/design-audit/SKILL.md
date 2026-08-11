@@ -73,6 +73,9 @@ them the detector output.
    If the surface will be demoed to investors or clients, run the
    pre-demo purge gate: zero fabricated claims, every simulation
    labeled, every [PENDING] resolved or consciously accepted.
+   On AI surfaces (extraction, copilot, generation) add
+   production/ai-surfaces.md: editable-before-apply, visible confidence,
+   inference states, rendered-value verification of headline metrics.
    On app surfaces add production/launch-and-structure.md: trust surface
    (legal routes, favicon, metadata, robots), timezone-safe "today"
    logic, revalidation targets vs rendering routes, waterfall counts,

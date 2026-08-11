@@ -54,7 +54,12 @@ thresholds, stop conditions). Compressed:
    logos or legal copy.
 2. Understand: one-sentence problem statement, audience, primary task.
    At most one clarifying question, only when the reading genuinely
-   forks.
+   forks. First run in a project (no reference set stored and not
+   declined): ask once for the user's reference set - real examples
+   they rate in their niche, target audience, any real outcome data -
+   and store it in project-preferences.json. Audits then judge against
+   the user's standard, not a generic one. If declined, record it and
+   never ask again.
 3. Classify the surface (`references/surface-types.md`) and complete the
    direction protocol
    (`${CLAUDE_PLUGIN_ROOT}/references/visual-directions/direction-protocol.md`):

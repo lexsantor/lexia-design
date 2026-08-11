@@ -23,6 +23,15 @@ variance caps at 6; motion follows the frequency gate strictly; identity
 lives in typography, spacing precision, color discipline and voice: not
 in novelty layouts.
 
+## AI surface (product-surface subtype)
+
+Extraction flows, copilots, generation tools: any screen where a model's
+output becomes user data. All product-surface rules apply, plus the
+extraction contract in `references/production/ai-surfaces.md`: per-field
+confidence shown, below-threshold fields marked and focused, everything
+editable before applying, one explicit apply action. Demos follow its
+design-for-failure protocol and are verified by rendered values.
+
 ## Hybrid surface
 
 Marketing site + app, docs + product, storefront + account area. Draw the

@@ -86,7 +86,8 @@
     {
       "file": "LocaleSwitcher.tsx",
       "expectRules": [
-        "i18n/locale-switch-soft-nav"
+        "i18n/locale-switch-soft-nav",
+        "i18n/emoji-flag"
       ]
     },
     {
@@ -134,6 +135,19 @@
         "slop/default-section-sequence",
         "slop/uniform-reveal",
         "content/todo-marker"
+      ]
+    },
+    {
+      "file": "counter-format.ts",
+      "expectRules": [
+        "i18n/tolocalestring-no-locale"
+      ]
+    },
+    {
+      "dir": "i18n-catalog",
+      "expectRules": [
+        "i18n/key-leaf-object-collision",
+        "i18n/locale-coverage-gap"
       ]
     }
   ]

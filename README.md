@@ -8,14 +8,14 @@
 <br/>
 
 [![CI](https://github.com/lexsantor/lexia-design/actions/workflows/ci.yml/badge.svg)](https://github.com/lexsantor/lexia-design/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-0.5.0-1f6feb)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.6.0-1f6feb)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-3fb950)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%E2%89%A518-5a6472)](#install)
 [![Deps](https://img.shields.io/badge/runtime%20deps-0-5a6472)](scripts)
 
 <br/>
 
-<b>72</b> detector rules&nbsp;&nbsp;·&nbsp;&nbsp;<b>15</b> scored dimensions&nbsp;&nbsp;·&nbsp;&nbsp;<b>≤4</b> iterations, bounded&nbsp;&nbsp;·&nbsp;&nbsp;<b>0</b> runtime dependencies
+<b>76</b> detector rules&nbsp;&nbsp;·&nbsp;&nbsp;<b>15</b> scored dimensions&nbsp;&nbsp;·&nbsp;&nbsp;<b>≤4</b> iterations, bounded&nbsp;&nbsp;·&nbsp;&nbsp;<b>0</b> runtime dependencies
 
 <br/>
 
@@ -56,7 +56,7 @@ can check.
 
 **Checks its own work**
 
-Seventy-two deterministic rules,
+Seventy-six deterministic rules,
 fresh-context reviewers, in
 isolated tracks. Every finding
 verified before it is acted on.
@@ -101,6 +101,7 @@ never the score.
 > No blocking issues open.
 
 LEXIA SCORE: 83.1 / 100 — B (Ship with named follow-ups)
+████████████████▋░░░ 83.1
 ```
 
 | | |
@@ -147,9 +148,13 @@ Then it is capped. A capped score always prints the raw value it came from.
 | Visual regression against the previous iteration | **79** |
 | Not visually verified (nothing rendered) | **89** |
 
-`90+` A ship &nbsp;·&nbsp; `80-89` B ship with named follow-ups &nbsp;·&nbsp;
-`70-79` C usable, material gaps &nbsp;·&nbsp; `60-69` D not ready
-&nbsp;·&nbsp; `<60` F blocked
+```
+90-100  █████████▉  A   ship
+80-89   ████████▍   B   ship with named follow-ups
+70-79   ███████▍    C   usable, material gaps
+60-69   ██████▍     D   not ready
+<60     █████▏      F   blocked
+```
 
 The score is a weighted opinion, not a measurement. Compare it only across
 equal coverage: a deeper audit scoring lower than a shallower one is not a
@@ -231,7 +236,7 @@ flowchart LR
 
     subgraph E [Audit: two isolated tracks]
         direction TB
-        E1[Detector: 72 deterministic rules]
+        E1[Detector: 76 deterministic rules]
         E2[Reviewers: fresh context, disjoint lenses]
     end
 ```
@@ -271,7 +276,7 @@ the user's budget without converging.
 </table>
 
 <details>
-<summary><b>Detector</b> — 72 rules, zero dependencies, never rewrites code</summary>
+<summary><b>Detector</b> — 76 rules, zero dependencies, never rewrites code</summary>
 
 <br/>
 
@@ -281,15 +286,15 @@ node scripts/lexia-design-audit.mjs --deep src --format json
 node scripts/lexia-design-audit.mjs --list-rules
 ```
 
-| Family | Catches, for example |
-|---|---|
-| `a11y/*` | zoom disabled, paste blocked, clickable divs, focus outline removed with no replacement, tablist without panels, reveal wrapper over legal content |
-| `motion/*` | `transition: all`, layout-property transitions, `scale(0)` entrances, blur in entrances, press without transform, missing reduced-motion guard, LCP behind a reveal, counters resting at zero |
-| `slop/*` | purple-blue gradient, emoji as icons, eyebrow density, card density, negative parallelism, reframe setups and headings, template section order, uniform reveals |
-| `content/*` | fabricated metrics, star-rated testimonials, buzzword copy, lorem ipsum, loud [PENDING] placeholders, assistant chatter, model-disclaimer leaks, engagement bait, puffery, dead metaphors, entity aliasing, claim repetition, stock faces on testimonials, unlabeled simulations |
-| `system/*` | off-token colors, hardcoded shadows, near-duplicate tokens, an accent that is functionally ink, theme-toggle desync, color tokens missing the alpha placeholder |
-| `i18n/*` | provider without an explicit locale, locale switcher on soft navigation, hardcoded locale segments |
-| `correctness/*` `ux/*` `layout/*` `perf/*` | server-local midnight in "today" logic, native `confirm()`, `order` with asymmetric grid tracks, broad `will-change` |
+| Family | Rules | Catches, for example |
+|---|:--:|---|
+| `a11y/*` | 11 | zoom disabled, paste blocked, clickable divs, focus outline removed with no replacement, tablist without panels, reveal wrapper over legal content |
+| `motion/*` | 10 | `transition: all`, layout-property transitions, `scale(0)` entrances, blur in entrances, press without transform, missing reduced-motion guard, LCP behind a reveal, counters resting at zero |
+| `slop/*` | 11 | purple-blue gradient, emoji as icons, eyebrow density, card density, negative parallelism, reframe setups and headings, template section order, uniform reveals |
+| `content/*` | 17 | fabricated metrics, star-rated testimonials, buzzword copy, lorem ipsum, loud [PENDING] placeholders, assistant chatter, model-disclaimer leaks, engagement bait, puffery, dead metaphors, entity aliasing, claim repetition, stock faces on testimonials, unlabeled simulations |
+| `system/*` | 15 | off-token colors, hardcoded shadows, near-duplicate tokens, an accent that is functionally ink, theme-toggle desync, color tokens missing the alpha placeholder |
+| `i18n/*` | 7 | provider without an explicit locale, locale switcher on soft navigation, hardcoded locale segments, formatters without a locale, leaf/parent key collisions, partial catalogs, emoji flags |
+| `correctness/*` `ux/*` `layout/*` `perf/*` `project/*` | 5 | server-local midnight in "today" logic, native `confirm()`, `order` with asymmetric grid tracks, broad `will-change` |
 
 A flag is a signal, not a verdict. Every finding is verified before it is
 acted on: `TRUE_POSITIVE`, `MITIGATED` or `FALSE_POSITIVE`. Deliberate
@@ -314,6 +319,7 @@ deviations are waived inline and recorded in the decision log.
 | **Anti-slop** | Pattern registry framed as defaults not bans, copy rules including syntactic tells, and model priors with a convergence-breaking procedure |
 | **Visual directions** | Twelve territories, each with falsifiable "breaks if" commitments, plus the direction protocol and adjective translation |
 | **Production** | Trust surface and GDPR Art. 13 launch gate, timezone-safe date logic, structure patterns, generated-asset pipelines |
+| **AI surfaces** | The extraction contract: per-field confidence shown, below-threshold fields marked and focused, editable before applying. Demo-for-failure protocol, verified by rendered values |
 | **Component libraries** | Ten-point vetting checklist, registration contract, and a verified catalog with licensing status |
 
 </details>
@@ -329,10 +335,11 @@ deviations are waived inline and recorded in the decision log.
 ├── DESIGN-SYSTEM.md           tokens, contract with its breaks-if list, externals
 ├── DESIGN-AUDIT.md            findings with verdicts and evidence
 ├── DESIGN-REPORT.md           the /100 table
+├── TRAJECTORY.md              one note per cycle: the path, not the outcome
 ├── decisions.jsonl            decisions, waivers, preferences, with scope
 ├── rejected-patterns.jsonl    what was tried and refused, and why
 ├── evaluation-history.jsonl   every iteration, score, coverage and verdict
-└── project-preferences.json   thresholds and dial overrides
+└── project-preferences.json   thresholds, dials, the user's reference set
 ```
 
 A single project's outcome never becomes a universal rule automatically.

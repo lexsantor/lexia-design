@@ -104,6 +104,10 @@ message. Order is fixed:
 
 Never declare thresholds met without the gate output, and never present a
 score for a dimension that was not verified: mark it n/a and let the gate
-renormalize. Then update `.lexia-design/` (project-memory.md), including
-a short trajectory note: which fixes regressed, which were reapplied,
-which findings were false positives, and what to do first next time.
+renormalize. Then update `.lexia-design/` (project-memory.md), and append the
+cycle's trajectory note to `.lexia-design/TRAJECTORY.md`: which fixes
+regressed, which were reapplied, which findings were false positives,
+what to do FIRST next time, and the one-paragraph cleaner prompt that
+would have reached this result sooner. Decisions and scores record
+outcomes; the trajectory note records the PATH - it is what makes
+iteration budgets compound across sessions instead of resetting.
