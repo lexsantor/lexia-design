@@ -30,6 +30,7 @@
 node --check scripts/*.mjs evals/run-evals.mjs
 node evals/run-evals.mjs --smoke
 claude plugin validate .
+node evals/run-evals.mjs --as-shipped   # what CI will actually see
 ```
 
 5. Update CHANGELOG.md (with motivation) and, if sources changed,
@@ -39,7 +40,12 @@ claude plugin validate .
    description, detector grid) and the banner SVGs. CI enforces that the
    landing passes the detector, not that its numbers are current - the
    sync is this checklist's job. Then bump plugin.json's version.
-7. PR with: what changed, why (evidence), fixture proof, smoke output.
+7. Run `node evals/run-evals.mjs --as-shipped` before pushing. It runs the
+   smoke suite against `git archive HEAD`, so a fixture that exists only in
+   your working tree (untracked, or matched by .gitignore) fails here
+   instead of in CI. Files a fixture needs must be tracked; if .gitignore
+   matches them, add a negation next to the rule that excludes them.
+8. PR with: what changed, why (evidence), fixture proof, smoke output.
 
 ## Adding a knowledge source
 

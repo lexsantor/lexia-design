@@ -8,7 +8,7 @@
 <br/>
 
 [![CI](https://github.com/lexsantor/lexia-design/actions/workflows/ci.yml/badge.svg)](https://github.com/lexsantor/lexia-design/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-0.7.2-1f6feb)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.7.4-1f6feb)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-3fb950)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%E2%89%A518-5a6472)](#install)
 [![Deps](https://img.shields.io/badge/runtime%20deps-0-5a6472)](scripts)
@@ -399,6 +399,7 @@ evidence grade.
 node evals/run-evals.mjs --smoke                # cases, detector self-test, gate arithmetic
 node scripts/lexia-design-score.mjs doctor     # install + project-memory health
 node scripts/lexia-design-audit.mjs --waivers . # every inline waiver, with its reason
+node evals/run-evals.mjs --as-shipped           # same suite against git archive HEAD
 claude plugin validate .
 ```
 

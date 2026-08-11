@@ -4,6 +4,28 @@ All notable changes to lexia-design. Format: Keep a Changelog; versioning:
 semver. Rule changes should cite the observed failure or source update that
 motivated them (changelog-driven hardening).
 
+## [0.7.4] - 2026-08-11
+
+### Fixed
+
+- CI was red from 0.7.2 onward, and the cause was a false claim rather
+  than the 0.7.3 hooks fix that happened to sit on top of it.
+  `.gitignore` matched `.lexia-design/` at any depth, so two directories
+  that must ship were never committed: the off-token fixture's
+  `DESIGN-SYSTEM.md` (without it `system/off-token-colors` cannot fire,
+  and 0.7.2's own new coverage assertion failed the build) and this
+  repo's project memory - which 0.7.2's changelog and the landing both
+  describe as shipping in-repo. That claim was false when it was made;
+  both directories are now tracked via explicit negations, and it is
+  true.
+
+### Added
+
+- `node evals/run-evals.mjs --as-shipped`: runs the smoke suite against
+  `git archive HEAD` instead of the working tree, so "passes locally,
+  fails in CI" is caught before pushing. It reproduces this exact bug on
+  the broken commit, and is now step 7 of the release checklist.
+
 ## [0.7.3] - 2026-08-11
 
 ### Fixed

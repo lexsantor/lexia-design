@@ -4,6 +4,7 @@
  *
  * Modes:
  *   node evals/run-evals.mjs               --smoke (default): fully offline, no API cost.
+ *   node evals/run-evals.mjs --as-shipped  run --smoke against git archive HEAD (what CI sees).
  *     1. Validates every evals/cases/*.json against the case schema.
  *     2. Verifies every case has a grading rubric in evals/expected/<id>.md.
  *     3. Cross-checks forbidden_detector_rules against the real detector rule list.
@@ -118,6 +119,34 @@ function smokeGateMath() {
   check("regression caps at 79", runGate(() => {}, ["--regressions", "1"]), 79, "C");
   check("not-rendered caps at 89", runGate(() => {}, ["--not-rendered"]), 89, "B");
   console.log(`  ${n} arithmetic cases`);
+}
+
+
+function asShippedMode() {
+  // Runs the smoke suite against what git would actually SHIP (git archive
+  // HEAD), not the working tree. A fixture that exists locally but is
+  // ignored or untracked passes here and fails in CI: that happened once,
+  // an ignored .lexia-design/ inside a fixture, and cost a red build.
+  const inRepo = spawnSync("git", ["rev-parse", "--is-inside-work-tree"], { cwd: PLUGIN_ROOT, encoding: "utf8" });
+  if (inRepo.status !== 0) {
+    console.log("--as-shipped needs a git checkout of the plugin. Nothing was verified.");
+    process.exit(1);
+  }
+  const tmp = mkdtempSync(join(tmpdir(), "lexia-shipped-"));
+  const exported = spawnSync("sh", ["-c", "git archive HEAD | tar -x -C " + JSON.stringify(tmp)], { cwd: PLUGIN_ROOT, encoding: "utf8" });
+  if (exported.status !== 0) {
+    console.log("--as-shipped: could not export HEAD (" + (exported.stderr || "").trim() + "). Nothing was verified.");
+    process.exit(1);
+  }
+  console.log("== Smoke suite against HEAD as shipped (" + tmp + ") ==");
+  const res = spawnSync(process.execPath, [join(tmp, "evals", "run-evals.mjs"), "--smoke"], { encoding: "utf8" });
+  process.stdout.write(res.stdout || "");
+  process.stderr.write(res.stderr || "");
+  if (res.status !== 0) {
+    console.log("\nThe working tree passes but HEAD does not: something needed is untracked or ignored.");
+    console.log("Check with: git status --porcelain --ignored | grep evals/");
+  }
+  process.exit(res.status === null ? 1 : res.status);
 }
 
 function smokeCases() {
@@ -236,6 +265,7 @@ function main() {
   const args = process.argv.slice(2);
   try {
     if (args.includes("--live")) { liveMode(args.includes("--execute")); return; }
+    if (args.includes("--as-shipped")) { asShippedMode(); return; }
     console.log("lexia-design evals — smoke mode (offline, no API cost)");
     smokeStructure();
     smokeCases();

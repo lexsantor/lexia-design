@@ -1,0 +1,31 @@
+{
+  "$doc": "Per-project overrides read by lexia-design scripts and skills. Delete keys to use defaults.",
+  "thresholds": {
+    "MAX_ITERATIONS": 4,
+    "MIN_TOTAL_SCORE": 8.5,
+    "MIN_DISTINCTIVENESS_SCORE": 7.5,
+    "CRITICAL_ACCESSIBILITY_ISSUES": 0,
+    "CRITICAL_USABILITY_ISSUES": 0,
+    "VISUAL_REGRESSIONS": 0,
+    "MIN_PROGRESS_DELTA": 0.05
+  },
+  "dials": {
+    "DESIGN_VARIANCE": 5,
+    "MOTION_INTENSITY": 3,
+    "VISUAL_DENSITY": 4
+  },
+  "referenceSet": {
+    "$doc": "The user's standard, collected at first run (LD-WF-07). Audits judge against these, not a generic default. 'declined' true stops the first-run prompt.",
+    "examples": [],
+    "audience": "developers arriving from the repo; solution/product-aware",
+    "outcomeData": "",
+    "declined": true
+  },
+  "dependencyBudget": {
+    "allowNewRuntimeDeps": true,
+    "notes": "Every new runtime dependency still requires the written justification protocol."
+  },
+  "hooks": {
+    "notes": "Disable all lexia-design hooks per-session with LEXIA_DESIGN_HOOKS=0, or per-install with: claude plugin disable lexia-design"
+  }
+}

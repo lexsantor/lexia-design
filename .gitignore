@@ -4,5 +4,11 @@ dist/
 *.zip
 .DS_Store
 .lexia-design/
+# ...except this repo's own project memory (published deliberately: the
+# landing and CHANGELOG cite it) and the fixture that needs a DESIGN-SYSTEM
+# to detect off-token colors. A parent directory exclusion stops git from
+# descending, so the directories themselves are re-included, not just files.
+!/.lexia-design/
+!evals/fixtures/**/.lexia-design/
 UPDATE_PROPOSAL.md
 evals/results/
