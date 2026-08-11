@@ -21,6 +21,15 @@ jobs:
           node --check evals/run-evals.mjs
       - name: Offline smoke suite (cases + detector self-test)
         run: node evals/run-evals.mjs --smoke
+      - name: Landing page passes its own detector (0 findings)
+        run: |
+          node -e "
+            const { execFileSync } = require('child_process');
+            const out = execFileSync(process.execPath, ['scripts/lexia-design-audit.mjs', 'docs/index.html', '--format', 'json'], { encoding: 'utf8' });
+            const n = JSON.parse(out).findings.length;
+            if (n > 0) { console.error(out); throw new Error(n + ' finding(s) on docs/index.html'); }
+            console.log('docs/index.html: 0 findings');
+          "
       - name: JSON manifests parse
         run: |
           node -e "JSON.parse(require('fs').readFileSync('.claude-plugin/plugin.json','utf8'))"

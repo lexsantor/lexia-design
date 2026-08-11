@@ -4,6 +4,30 @@ All notable changes to lexia-design. Format: Keep a Changelog; versioning:
 semver. Rule changes should cite the observed failure or source update that
 motivated them (changelog-driven hardening).
 
+## [0.6.1] - 2026-08-11
+
+The public landing page, and two detector precision fixes it surfaced by
+being the first plain-CSS HTML file the detector met.
+
+### Added
+
+- `docs/index.html`: single-file GitHub Pages landing. Inline CSS/JS,
+  system fonts, zero dependencies, dark/light via prefers-color-scheme,
+  reduced-motion guard, skip link, focus-visible styles, selectable text
+  throughout. The page passes the repo's own detector with 0 findings,
+  and CI now enforces that on every push.
+- README links the site.
+
+### Fixed
+
+- `system/alpha-value-missing` no longer fires on plain-CSS `:root`
+  custom properties: it is scoped to Tailwind token contexts (`@theme`,
+  or class-attribute opacity utilities present). It had produced 24
+  false positives on one plain HTML file.
+- `content/claim-repetition` strips `<style>` and `<script>` blocks
+  before counting visible copy; CSS declarations no longer read as
+  repeated claims.
+
 ## [0.6.0] - 2026-08-11
 
 Tier 4 of the learning-database integration: new capability, not

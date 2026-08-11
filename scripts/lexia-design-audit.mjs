@@ -303,7 +303,7 @@ const RULES = [
     kind: "line",
     re: /--[\w-]+\s*:\s*(?:oklch|lch|lab|hsl|rgb|color)\([^;]*\)\s*;/g,
     valueTest: (m) => !/<alpha-value>|\/\s*(?:var\(|<)/.test(m[0]),
-    onlyIf: (c) => /\/(?:\d{1,3})\b|\/\[/.test(c) || /@theme|:root/.test(c),
+    onlyIf: (c) => /@theme/.test(c) || (/class(?:Name)?\s*=/.test(c) && /[\w)\]]\/\d{1,3}(?=["'\s])/.test(c)),
     msg: "Color token declared without an alpha placeholder",
     fix: "Opacity modifiers silently emit nothing on opaque color functions. Declare the alpha slot (e.g. oklch(L C H / <alpha-value>)) before any /opacity utility exists.",
   },
@@ -459,7 +459,8 @@ const RULES = [
     id: "content/claim-repetition", severity: "minor", confidence: "review", exts: MARKUP,
     kind: "file",
     test: (c) => {
-      const words = c.replace(/<[^>]+>/g, " ").toLowerCase().replace(/[^a-z' ]+/g, " ").split(/\s+/).filter((w) => w.length > 2);
+      const visible = c.replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<[^>]+>/g, " ");
+      const words = visible.toLowerCase().replace(/[^a-z' ]+/g, " ").split(/\s+/).filter((w) => w.length > 2);
       const seen = new Map();
       for (let i = 0; i + 3 < words.length; i++) {
         const k = words.slice(i, i + 4).join(" ");

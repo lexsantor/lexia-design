@@ -8,7 +8,7 @@
 <br/>
 
 [![CI](https://github.com/lexsantor/lexia-design/actions/workflows/ci.yml/badge.svg)](https://github.com/lexsantor/lexia-design/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-0.6.0-1f6feb)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.6.1-1f6feb)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-3fb950)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%E2%89%A518-5a6472)](#install)
 [![Deps](https://img.shields.io/badge/runtime%20deps-0-5a6472)](scripts)
@@ -19,6 +19,7 @@
 
 <br/>
 
+**[Site](https://lexsantor.github.io/lexia-design/)** &nbsp;·&nbsp;
 **[What it does](#what-it-does)** &nbsp;·&nbsp;
 **[The report](#the-report)** &nbsp;·&nbsp;
 **[Install](#install)** &nbsp;·&nbsp;
