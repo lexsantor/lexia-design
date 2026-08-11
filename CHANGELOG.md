@@ -4,6 +4,53 @@ All notable changes to lexia-design. Format: Keep a Changelog; versioning:
 semver. Rule changes should cite the observed failure or source update that
 motivated them (changelog-driven hardening).
 
+## [0.7.0] - 2026-08-11
+
+Tier 5: conversion architecture - the gap the learning database named
+and could not close from its own corpus. Externally sourced (Schwartz's
+awareness stages as attributed concept; Baymard's form research; NN/g on
+link labels; WCAG 1.3.5), synthesized, and recorded in SOURCES.md
+section 12.
+
+### Added
+
+- `references/conversion/architecture.md`: awareness-stage section
+  ordering (the template order assumes one stage for every product; the
+  brief now states the assumed stage so ordering is auditable), one idea
+  per viewport, CTA hierarchy with the commitment ladder, objection
+  placement adjacent to where objections occur, proof adjacency, and
+  the form-friction catalog.
+- 3 fixture-proven rules, new `conversion/` family (67 file + 12
+  project = 79 total):
+  - `conversion/vague-cta` - "Learn more / Click here / Submit" as the
+    whole label of a link or button
+  - `conversion/autocomplete-missing` - email/tel inputs without an
+    autocomplete attribute (WCAG 1.3.5's mechanical half)
+  - `conversion/form-field-overload` - a form with more than ten
+    visible fields
+- Fixture `conversion-form.html`
+- Wiring: brand surfaces with a conversion goal load the reference;
+  the audit skill adds the conversion pass (viewport-idea naming,
+  order-vs-stage check, one primary CTA, proof adjacency, form sweep),
+  with ordering verdicts recording the awareness assumption they
+  depend on.
+- SOURCES.md section 12 with access dates and re-verification notes.
+
+### Fixed
+
+- Primitive-discipline project rules no longer treat test/fixture trees
+  (`fixtures/`, `tests/`, `evals/`, `__mocks__/`, `e2e/`) as the
+  project's primitives directory: a components/ui inside fixtures was
+  putting real app markup under the primitives contract (found via this
+  repo's own self-audit, where the eval fixtures flagged the landing's
+  data table).
+
+### Honest limits
+
+- No conversion-rate claims: uplift requires the project's own
+  measurement. Ordering and objection placement stay reviewer
+  judgments; only the mechanical defects are detector rules.
+
 ## [0.6.1] - 2026-08-11
 
 The public landing page, and two detector precision fixes it surfaced by

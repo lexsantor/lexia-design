@@ -149,6 +149,14 @@
         "i18n/key-leaf-object-collision",
         "i18n/locale-coverage-gap"
       ]
+    },
+    {
+      "file": "conversion-form.html",
+      "expectRules": [
+        "conversion/vague-cta",
+        "conversion/autocomplete-missing",
+        "conversion/form-field-overload"
+      ]
     }
   ]
 }

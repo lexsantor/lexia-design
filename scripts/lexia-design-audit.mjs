@@ -520,6 +520,30 @@ const RULES = [
     msg: "The same reveal on five or more sections",
     fix: "One reveal variant everywhere means no motion decision was made. Vary by content, or remove the reveal.",
   },
+  // ---- Tier 5: conversion architecture (see references/conversion/). ----
+  {
+    id: "conversion/vague-cta", severity: "minor", confidence: "review", exts: MARKUP,
+    kind: "line", dedupePerLine: true,
+    re: /<(?:a|button)\b[^>]*>\s*(?:learn more|click here|read more|find out more|submit)\s*<\/(?:a|button)>/gi,
+    msg: "Vague action label",
+    fix: "Labels carry the action and the value, front-loaded: 'Start the free audit' beats 'Learn more'. Vague labels fail scanners and screen-reader link lists, and hide the commitment behind a click.",
+  },
+  {
+    id: "conversion/autocomplete-missing", severity: "moderate", confidence: "review", exts: MARKUP,
+    kind: "line", dedupePerLine: true,
+    re: /<input\b[^>]*type=["'](?:email|tel)["'][^>]*>/gi,
+    valueTest: (m) => !/autocomplete\s*=/.test(m[0]),
+    msg: "Identity field without an autocomplete attribute",
+    fix: "Autofill works only when enabled (also WCAG 1.3.5 AA). Add autocomplete=\"email\" / \"tel\"; a form that fights the browser taxes every visitor.",
+  },
+  {
+    id: "conversion/form-field-overload", severity: "minor", confidence: "review", exts: MARKUP,
+    kind: "file",
+    test: (c) => /<form\b/i.test(c) && (c.match(/<(?:input|select|textarea)\b(?![^>]*type=["'](?:hidden|submit|button)["'])/gi) || []).length > 10,
+    re: /<form\b/i,
+    msg: "Form with more than ten visible fields",
+    fix: "Ask only for what the product uses today; every field names the feature that consumes it. Baymard's checkout research cut 16 fields to 8 with no information loss.",
+  },
   {
     id: "system/raw-black-white", severity: "moderate", confidence: "review", exts: MARKUP,
     kind: "line", dedupePerLine: true,
@@ -801,14 +825,19 @@ function projectRules(files, contentsById, root) {
 
   // ---- Tier 2: primitive discipline and build-gate wiring (field learnings) ----
   const norm = (f) => f.replace(/\\/g, "/");
+  // Test/fixture trees do not define the project's primitive discipline:
+  // a components/ui inside fixtures must not put the real app under the
+  // primitives contract (found via this repo's own self-audit).
+  const relPath = (f) => norm(relative(root, f));
+  const isTestTree = (f) => /(^|\/)(__tests__|tests?|fixtures|__fixtures__|__mocks__|e2e|evals)\//.test(relPath(f));
   const primDirRe = /(components\/ui|components\/primitives|ui\/primitives)\//;
-  const primFiles = files.filter((f) => primDirRe.test(norm(f)));
+  const primFiles = files.filter((f) => primDirRe.test(norm(f)) && !isTestTree(f));
   if (primFiles.length) {
     const primNames = primFiles.map((f) => (norm(f).split("/").pop() || "").replace(/\.\w+$/, "").toLowerCase());
     const hasFormPrim = primNames.some((n) => /(input|field|select|textarea|form|control)/.test(n));
     const hasTablePrim = primNames.some((n) => /table/.test(n));
     for (const f of files) {
-      if (primDirRe.test(norm(f))) continue;
+      if (primDirRe.test(norm(f)) || isTestTree(f)) continue;
       if (!MARKUP.has(extname(f).toLowerCase())) continue; // app-layer means rendered markup, not scripts
       const c = contentsById.get(f) || "";
       if (hasFormPrim && /<(select|textarea)\b|<input\b(?![^>]*type="hidden")/.test(c)) {

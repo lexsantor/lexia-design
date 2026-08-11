@@ -244,6 +244,33 @@ Where sources contradict each other, the resolution is recorded in
   recurring a11y patterns, surface parity, asset-pipeline rules.
   Integrated in v0.2.0; see CHANGELOG for the per-learning mapping.
 
+## 12. Conversion architecture sources (v0.7.0)
+
+- Eugene Schwartz, Breakthrough Advertising (1966): the five awareness
+  stages, used as an attributed CONCEPT only. The book is copyrighted;
+  no text is reproduced. The staging model is applied to section
+  ordering as original synthesis.
+- Baymard Institute (public articles, accessed 2026-08-11):
+  https://baymard.com/blog/avoid-multi-column-forms (2023-10-31,
+  extensive multi-column forms cause skipped fields; short paired
+  fields on one line acceptable inside a single-column flow) and
+  https://baymard.com/blog/checkout-optimization-from-16-fields-to-8
+  (a typical checkout's fields can be halved). Proprietary research;
+  principles cited with attribution, no figures or text copied beyond
+  the field counts named in the article titles.
+- Nielsen Norman Group, "Learn More Links: You Can Do Better"
+  (Katie Sherwin, 2015-12-13, accessed 2026-08-11):
+  https://www.nngroup.com/articles/learn-more-links/ - vague labels
+  fail information scent and screen-reader link lists; front-load
+  descriptive keywords. Copyrighted article; principle cited.
+- WCAG 2.2 SC 1.3.5 Identify Input Purpose (AA) - already pinned in
+  section 10; conversion/autocomplete-missing enforces its mechanical
+  half.
+- Re-verification: fetch both article URLs and confirm the findings
+  still stand; Baymard occasionally updates posts in place.
+
+---
+
 ## Cross-source conflicts and resolutions
 
 1. Exit easing: Emil (ease-out for exits) vs Material-derived convention

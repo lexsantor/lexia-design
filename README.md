@@ -8,14 +8,14 @@
 <br/>
 
 [![CI](https://github.com/lexsantor/lexia-design/actions/workflows/ci.yml/badge.svg)](https://github.com/lexsantor/lexia-design/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-0.6.1-1f6feb)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.7.0-1f6feb)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-3fb950)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%E2%89%A518-5a6472)](#install)
 [![Deps](https://img.shields.io/badge/runtime%20deps-0-5a6472)](scripts)
 
 <br/>
 
-<b>76</b> detector rules&nbsp;&nbsp;·&nbsp;&nbsp;<b>15</b> scored dimensions&nbsp;&nbsp;·&nbsp;&nbsp;<b>≤4</b> iterations, bounded&nbsp;&nbsp;·&nbsp;&nbsp;<b>0</b> runtime dependencies
+<b>79</b> detector rules&nbsp;&nbsp;·&nbsp;&nbsp;<b>15</b> scored dimensions&nbsp;&nbsp;·&nbsp;&nbsp;<b>≤4</b> iterations, bounded&nbsp;&nbsp;·&nbsp;&nbsp;<b>0</b> runtime dependencies
 
 <br/>
 
@@ -57,7 +57,7 @@ can check.
 
 **Checks its own work**
 
-Seventy-six deterministic rules,
+Seventy-nine deterministic rules,
 fresh-context reviewers, in
 isolated tracks. Every finding
 verified before it is acted on.
@@ -237,7 +237,7 @@ flowchart LR
 
     subgraph E [Audit: two isolated tracks]
         direction TB
-        E1[Detector: 76 deterministic rules]
+        E1[Detector: 79 deterministic rules]
         E2[Reviewers: fresh context, disjoint lenses]
     end
 ```
@@ -277,7 +277,7 @@ the user's budget without converging.
 </table>
 
 <details>
-<summary><b>Detector</b> — 76 rules, zero dependencies, never rewrites code</summary>
+<summary><b>Detector</b> — 79 rules, zero dependencies, never rewrites code</summary>
 
 <br/>
 
@@ -295,6 +295,7 @@ node scripts/lexia-design-audit.mjs --list-rules
 | `content/*` | 17 | fabricated metrics, star-rated testimonials, buzzword copy, lorem ipsum, loud [PENDING] placeholders, assistant chatter, model-disclaimer leaks, engagement bait, puffery, dead metaphors, entity aliasing, claim repetition, stock faces on testimonials, unlabeled simulations |
 | `system/*` | 15 | off-token colors, hardcoded shadows, near-duplicate tokens, an accent that is functionally ink, theme-toggle desync, color tokens missing the alpha placeholder |
 | `i18n/*` | 7 | provider without an explicit locale, locale switcher on soft navigation, hardcoded locale segments, formatters without a locale, leaf/parent key collisions, partial catalogs, emoji flags |
+| `conversion/*` | 3 | vague CTA labels, identity fields without autocomplete, forms asking for more than the product uses |
 | `correctness/*` `ux/*` `layout/*` `perf/*` `project/*` | 5 | server-local midnight in "today" logic, native `confirm()`, `order` with asymmetric grid tracks, broad `will-change` |
 
 A flag is a signal, not a verdict. Every finding is verified before it is

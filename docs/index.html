@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark light">
 <title>lexia-design · Design OS for coding agents</title>
-<meta name="description" content="A Claude Code plugin that gives coding agents a committed visual direction, an audit that argues back, and a score with caps a blocker cannot slip past. 76 detector rules, zero runtime dependencies, MIT.">
+<meta name="description" content="A Claude Code plugin that gives coding agents a committed visual direction, an audit that argues back, and a score with caps a blocker cannot slip past. 79 detector rules, zero runtime dependencies, MIT.">
 <meta property="og:title" content="lexia-design · Design OS for coding agents">
-<meta property="og:description" content="76 detector rules, 15 scored dimensions, a bounded convergence loop and a score that cannot hide a blocker. Zero runtime dependencies.">
+<meta property="og:description" content="79 detector rules, 15 scored dimensions, a bounded convergence loop and a score that cannot hide a blocker. Zero runtime dependencies.">
 <meta property="og:url" content="https://lexsantor.github.io/lexia-design/">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='hsl(215 28%25 9%25)'/%3E%3Crect x='6' y='21' width='20' height='3' rx='1.5' fill='hsl(215 14%25 24%25)'/%3E%3Crect x='6' y='21' width='16' height='3' rx='1.5' fill='hsl(16 100%25 60%25)'/%3E%3Ctext x='6' y='17' font-family='ui-monospace,monospace' font-size='12' font-weight='700' fill='hsl(210 17%25 93%25)'%3ELX%3C/text%3E%3C/svg%3E">
@@ -236,7 +236,7 @@
       <p class="lede">
         lexia-design adds the loop an agent lacks by default: <strong>a committed visual
         direction</strong> with falsifiable break conditions, <strong>an audit</strong> run by
-        fresh-context reviewers and 76 deterministic rules, and <strong>a score</strong> with caps
+        fresh-context reviewers and 79 deterministic rules, and <strong>a score</strong> with caps
         a blocker cannot slip past.
       </p>
       <div class="cmd">
@@ -244,7 +244,7 @@
         <button class="copy" type="button" data-copy="/plugin marketplace add lexsantor/lexia-design">Copy</button>
       </div>
       <div class="stats">
-        <div class="stat"><b>76</b><span>detector rules, every one fixture-proven</span></div>
+        <div class="stat"><b>79</b><span>detector rules, every one fixture-proven</span></div>
         <div class="stat"><b>15</b><span>scored dimensions, weighted and capped</span></div>
         <div class="stat"><b>&le;4</b><span>iterations; the loop is bounded on purpose</span></div>
         <div class="stat ok"><b>0</b><span>runtime dependencies; plain Node 18+</span></div>
@@ -316,7 +316,7 @@
 
   <section id="detector">
     <div class="wrap">
-      <h2>76 rules, zero dependencies</h2>
+      <h2>79 rules, zero dependencies</h2>
       <p class="sub">
         Regex tripwires over files and project structure: fast, deterministic, and honest
         about their limits. A flag is a signal. Every finding gets a verdict before it is
@@ -331,7 +331,7 @@
         <article><h3>i18n/<small>7</small></h3><p>Providers without an explicit locale, formatters on the browser default, leaf/parent key collisions, partial catalogs.</p></article>
       </div>
       <p class="fam-note">
-        Plus five more across <code>correctness/</code>, <code>ux/</code>, <code>layout/</code>,
+        Plus a conversion family (vague CTAs, autofill-hostile identity fields, oversized forms) and five more across <code>correctness/</code>, <code>ux/</code>, <code>layout/</code>,
         <code>perf/</code> and project scope. Run it on anything:
         <code>node scripts/lexia-design-audit.mjs --deep src</code>
       </p>

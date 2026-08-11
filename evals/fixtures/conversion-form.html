@@ -1,0 +1,22 @@
+<!-- Fixture: conversion-architecture defects. A lead form asking for far
+     more than the product uses, identity fields fighting autofill, and
+     vague action labels (LD Tier 5 / references/conversion). -->
+<section id="contact">
+  <h2>Request access</h2>
+  <form action="/lead" method="post">
+    <input type="text" name="first_name" placeholder="First name">
+    <input type="text" name="last_name" placeholder="Last name">
+    <input type="email" name="email" placeholder="Work email">
+    <input type="tel" name="phone" placeholder="Phone">
+    <input type="text" name="company" placeholder="Company">
+    <input type="text" name="role" placeholder="Role">
+    <select name="company_size"><option>1-10</option><option>11-50</option></select>
+    <select name="industry"><option>SaaS</option><option>Retail</option></select>
+    <input type="text" name="city" placeholder="City">
+    <input type="text" name="country" placeholder="Country">
+    <textarea name="message" placeholder="How can we help?"></textarea>
+    <input type="hidden" name="utm_source">
+    <button type="submit">Submit</button>
+  </form>
+  <a href="/product">Learn more</a>
+</section>

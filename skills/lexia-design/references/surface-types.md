@@ -11,7 +11,10 @@ Prioritize: identity, memorability, art direction, narrative, rhythm,
 differentiation. DESIGN_VARIANCE may run high; motion may be expressive;
 density usually low. Conversion paths (forms, pricing) still follow
 product-surface rules: the checkout inside a beautiful campaign is an
-Operate zone.
+Operate zone. Brand surfaces with a conversion goal also load
+`references/conversion/architecture.md`: classify the visitor's
+awareness stage in the brief, order sections for THAT stage, one idea
+per viewport, one primary CTA, objections answered where they occur.
 
 ## Product surface
 

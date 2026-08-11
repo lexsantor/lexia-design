@@ -73,6 +73,13 @@ them the detector output.
    If the surface will be demoed to investors or clients, run the
    pre-demo purge gate: zero fabricated claims, every simulation
    labeled, every [PENDING] resolved or consciously accepted.
+   On brand surfaces with a conversion goal add
+   conversion/architecture.md: name each viewport's single idea, check
+   the section order against the brief's stated awareness stage, one
+   primary CTA per page, proof within a viewport of every strong claim,
+   objections answered adjacent to where they occur, form-friction
+   sweep. Ordering verdicts record the awareness assumption they
+   depend on.
    On AI surfaces (extraction, copilot, generation) add
    production/ai-surfaces.md: editable-before-apply, visible confidence,
    inference states, rendered-value verification of headline metrics.
