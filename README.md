@@ -12,6 +12,7 @@
 [![License](https://img.shields.io/badge/license-MIT-3fb950)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%E2%89%A518-5a6472)](#install)
 [![Deps](https://img.shields.io/badge/runtime%20deps-0-5a6472)](scripts)
+[![Site](https://img.shields.io/badge/site-lexsantor.github.io%2Flexia--design-e8590c)](https://lexsantor.github.io/lexia-design/)
 
 <br/>
 

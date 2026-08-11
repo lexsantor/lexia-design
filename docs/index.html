@@ -309,7 +309,9 @@
       <p class="loop-note">
         Thresholds unmet sends the top severity tier back through Render, at most four times.
         Each closed cycle appends a trajectory note to project memory, so the next session
-        starts from the path taken, including what to fix first.
+        starts from the path taken, including what to fix first. On brand surfaces the audit
+        adds the conversion pass: section order checked against the visitor's stated awareness
+        stage, one idea per viewport, one primary action, proof beside every strong claim.
       </p>
     </div>
   </section>
@@ -329,11 +331,13 @@
         <article><h3>slop/<small>11</small></h3><p>Purple-blue gradients, negative parallelism, reframe headings, template section order, the same fade-up on every section.</p></article>
         <article><h3>motion/<small>10</small></h3><p>Layout-property transitions, entrances from scale zero, counters resting at zero, a missing reduced-motion guard.</p></article>
         <article><h3>i18n/<small>7</small></h3><p>Providers without an explicit locale, formatters on the browser default, leaf/parent key collisions, partial catalogs.</p></article>
+        <article><h3>conversion/<small>3</small></h3><p>Vague action labels, identity fields fighting autofill, forms asking for more than the product uses.</p></article>
+        <article><h3>correctness/ ux/ layout/ perf/<small>5</small></h3><p>Server-local midnight in date logic, native confirm dialogs, order against asymmetric grid tracks, broad will-change, project-wide reduced-motion.</p></article>
       </div>
       <p class="fam-note">
-        Plus a conversion family (vague CTAs, autofill-hostile identity fields, oversized forms) and five more across <code>correctness/</code>, <code>ux/</code>, <code>layout/</code>,
-        <code>perf/</code> and project scope. Run it on anything:
-        <code>node scripts/lexia-design-audit.mjs --deep src</code>
+        Twelve of the 79 are project-scope rules: they read structure
+        (catalogs, primitives, build wiring), not single files. Run it on
+        anything: <code>node scripts/lexia-design-audit.mjs --deep src</code>
       </p>
     </div>
   </section>

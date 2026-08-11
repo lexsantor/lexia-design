@@ -34,7 +34,12 @@ claude plugin validate .
 
 5. Update CHANGELOG.md (with motivation) and, if sources changed,
    SOURCES.md + sources.lock.json.
-6. PR with: what changed, why (evidence), fixture proof, smoke output.
+6. Sync the public surfaces IN THE SAME commit: rule counts and new
+   capabilities on README.md, docs/index.html (stats, hero, meta
+   description, detector grid) and the banner SVGs. CI enforces that the
+   landing passes the detector, not that its numbers are current - the
+   sync is this checklist's job. Then bump plugin.json's version.
+7. PR with: what changed, why (evidence), fixture proof, smoke output.
 
 ## Adding a knowledge source
 
