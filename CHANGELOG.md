@@ -4,6 +4,15 @@ All notable changes to lexia-design. Format: Keep a Changelog; versioning:
 semver. Rule changes should cite the observed failure or source update that
 motivated them (changelog-driven hardening).
 
+## [0.7.3] - 2026-08-11
+
+### Fixed
+- Plugin failed to load on Claude Code >= 2.1.220: `plugin.json` declared
+  `"hooks": "./hooks/hooks.json"`, but the CLI auto-loads the standard
+  `hooks/hooks.json`, so the manifest reference registered it twice
+  ("Duplicate hooks file detected") and the whole plugin was rejected.
+  The manifest `hooks` field is for ADDITIONAL hook files only; removed it.
+
 ## [0.7.2] - 2026-08-11
 
 First real run of /lexia-design, on the plugin's own landing page. The
