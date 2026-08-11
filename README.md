@@ -8,7 +8,7 @@
 <br/>
 
 [![CI](https://github.com/lexsantor/lexia-design/actions/workflows/ci.yml/badge.svg)](https://github.com/lexsantor/lexia-design/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-0.3.0-1f6feb)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.4.0-1f6feb)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-3fb950)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%E2%89%A518-5a6472)](#install)
 [![Deps](https://img.shields.io/badge/runtime%20deps-0-5a6472)](scripts)
@@ -52,7 +52,7 @@ can check.
 
 **Checks its own work**
 
-Fifty deterministic rules plus
+Fifty-seven deterministic rules plus
 fresh-context reviewers, in
 isolated tracks. Every finding
 verified before it is acted on.
@@ -227,7 +227,7 @@ flowchart LR
 
     subgraph E [Audit: two isolated tracks]
         direction TB
-        E1[Detector: 50 deterministic rules]
+        E1[Detector: 57 deterministic rules]
         E2[Reviewers: fresh context, disjoint lenses]
     end
 ```
@@ -267,7 +267,7 @@ the user's budget without converging.
 </table>
 
 <details>
-<summary><b>Detector</b> — 50 rules, zero dependencies, never rewrites code</summary>
+<summary><b>Detector</b> — 57 rules, zero dependencies, never rewrites code</summary>
 
 <br/>
 

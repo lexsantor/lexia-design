@@ -4,6 +4,49 @@ All notable changes to lexia-design. Format: Keep a Changelog; versioning:
 semver. Rule changes should cite the observed failure or source update that
 motivated them (changelog-driven hardening).
 
+## [0.4.0] - 2026-08-11
+
+Tier 2 of the learning database: the coherence layer. Motivation
+(field-proven, see docs/learnings/learning-database.md): in multi-session
+projects the recurring failure is not one bad screen but drift — widths,
+colors and controls diverging pass after pass until every audit repeats
+itself.
+
+### Added
+
+- Detector, 7 new rules, each fixture-proven (LD- ids from the learning
+  database): system/raw-black-white (LD-DS-12),
+  system/container-width-drift (LD-DS-03),
+  system/native-control-in-app-layer and system/hand-rolled-table
+  (LD-DS-08, gated on a primitives directory actually existing),
+  system/orphan-primitive (LD-DS-09), system/duplicate-primitive
+  (LD-DS-07, same svg path pasted across 3+ files),
+  system/design-gate-not-wired (LD-DA-01, package.json build vs lint
+  scripts). 47 file rules + 10 project rules = 57 total.
+- Rule-level path exclusions (pathExclude) so token rules skip
+  primitives, print and email directories by design.
+- Fixture evals/fixtures/primitives-drift/: a miniature app with a
+  primitives directory, an orphan primitive, native controls and an
+  inline table bypassing existing primitives, three content widths in
+  one file, raw black/white, a glyph pasted across three files, and a
+  design-lint script the build never runs. All seven rules assert.
+
+### Changed
+
+- design-system skill: one canonical content-width token; semantics
+  frozen (each accent one meaning product-wide, radius semantics, single
+  source of truth for token meaning); never ship kit defaults; new
+  Primitive discipline section including the intent gate (LD-DS-10: not
+  all duplication is debt — duplicate findings are questions, not
+  verdicts).
+- design-audit skill: root-cause escalation (a finding category
+  recurring across consecutive audits stops being instance-fixed and
+  escalates to primitive adoption or an invariant, LD-DA-04); exemptions
+  are named lists with written reasons, never silent skips (LD-DA-02);
+  deploy-side verification that the host build runs the gate.
+- workflow: the FIX step escalates recurring categories to the root
+  cause instead of re-fixing instances.
+
 ## [0.3.0] - 2026-08-11
 
 Tier 1 of the knowledge-vault harvest (docs/learnings/learning-database.md),

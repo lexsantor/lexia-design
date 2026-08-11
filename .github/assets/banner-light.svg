@@ -4,7 +4,7 @@
     <text x="64" y="132" fill="#0D1117" font-size="72" font-weight="700" letter-spacing="-2.5">lexia-design</text>
     <text x="66" y="176" fill="#57606A" font-size="15" font-weight="600" letter-spacing="6">DESIGN OS FOR CODING AGENTS</text>
     <line x1="64" y1="214" x2="1216" y2="214" stroke="#D0D7DE" stroke-width="1"/>
-    <text x="64" y="248" fill="#6E7781" font-size="14" letter-spacing="0.3">50 detector rules · WCAG 2.2 AA gate · zero runtime dependencies</text>
+    <text x="64" y="248" fill="#6E7781" font-size="14" letter-spacing="0.3">57 detector rules · WCAG 2.2 AA gate · zero runtime dependencies</text>
     <line x1="880" y1="60" x2="880" y2="190" stroke="#D0D7DE" stroke-width="1"/>
     <text x="928" y="86" fill="#57606A" font-size="12" font-weight="600" letter-spacing="3.5">LEXIA SCORE</text>
     <text x="928" y="152" fill="#D93900" font-size="60" font-weight="700" letter-spacing="-1.5">83.1</text>

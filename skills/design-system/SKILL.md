@@ -81,6 +81,42 @@ first: `${CLAUDE_PLUGIN_ROOT}/references/visual-directions/direction-protocol.md
   found later are audit findings [system/hardcoded-colors].
 - Name tokens by role (--surface-raised, --ink-muted), not by value
   (--gray-300 as a role name is debt).
+- ONE canonical content-width token, consumed by header, footer, floating
+  chrome and every section wrapper. A second max-width nested inside the
+  layout container is a defect [system/container-width-drift]: mixed
+  widths read as misalignment at section boundaries and turn a global
+  width change into a multi-file edit.
+- Freeze SEMANTICS, not only values: each accent maps to exactly one
+  meaning across the whole product (e.g. one accent = "AI-generated",
+  nothing else); one radius for controls; full-round reserved for pills
+  and toggles. Token semantics live in exactly ONE file; the other
+  documents link to it. Without frozen semantics every new screen
+  re-invents what a color means.
+- Never ship a component kit's default tokens [system/stock-kit-tokens
+  class of failure]: overwrite them with the project's system before any
+  screen is built, or four clients' products become the same product.
+- No raw black/white in app surfaces [system/raw-black-white]: they carry
+  no theme scale and go invisible in one of the two themes.
+
+## Primitive discipline
+
+- One primitive per concept: one Button, one CTA band, one page hero, one
+  icon module per glyph, one card type per entity. Duplicated glyphs and
+  copy-pasted section bands are the main source of drift
+  [system/duplicate-primitive].
+- The app layer consumes primitives. Native selects, inputs, textareas
+  and inline tables in application screens inherit no tokens, focus
+  rings, density or states [system/native-control-in-app-layer,
+  system/hand-rolled-table].
+- Grep the consumers BEFORE investing in a primitive: hardening a
+  component with zero consumers reaches no user while screens hand-roll
+  their own version [system/orphan-primitive]. Enumerate consumers
+  before changing anything shared, and state the expected visual effect
+  on each.
+- Not everything that looks like duplication is debt: audit INTENT before
+  consolidating. An animated hero tile and a data-density card can share
+  a name and serve different purposes; forcing the merge degrades both.
+  Duplicate findings are questions, not verdicts.
 
 ## Documentation
 

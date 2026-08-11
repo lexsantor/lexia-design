@@ -1,0 +1,8 @@
+{
+  "name": "primitives-drift-fixture",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "lint:design": "node scripts/lexia-design-audit.mjs --deep src"
+  }
+}

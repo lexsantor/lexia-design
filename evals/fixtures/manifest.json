@@ -85,6 +85,18 @@
       "expectRules": ["motion/countup-zero-base"]
     },
     {
+      "dir": "primitives-drift",
+      "expectRules": [
+        "system/container-width-drift",
+        "system/raw-black-white",
+        "system/native-control-in-app-layer",
+        "system/hand-rolled-table",
+        "system/orphan-primitive",
+        "system/duplicate-primitive",
+        "system/design-gate-not-wired"
+      ]
+    },
+    {
       "dir": "theme-desync",
       "expectRules": [
         "system/dark-variant-desync",

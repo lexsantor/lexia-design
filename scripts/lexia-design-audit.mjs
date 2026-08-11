@@ -368,6 +368,22 @@ const RULES = [
     msg: "Negative parallelism in interface copy",
     fix: "The most measured AI writing tell. Delete the rejected half and state the positive claim directly. Legitimate only when correcting a specific factual, legal or numeric error.",
   },
+  {
+    id: "system/raw-black-white", severity: "moderate", confidence: "review", exts: MARKUP,
+    kind: "line", dedupePerLine: true,
+    pathExclude: /(components[\/\\]ui|primitives|emails?|print)[\/\\]/i,
+    re: /(?<=["'\s])(?:text|bg|border|fill|stroke|ring|divide)-(?:black|white)(?:\/\d+)?(?=["'\s])/g,
+    msg: "Raw black/white outside the token system",
+    fix: "text-black / bg-white carry no theme scale: the element goes invisible in one of the two themes. Use surface/ink tokens.",
+  },
+  {
+    id: "system/container-width-drift", severity: "moderate", confidence: "review", exts: MARKUP,
+    kind: "file",
+    test: (c) => new Set(c.match(/max-w-(?:sm|md|lg|xl|[2-7]xl|screen-\w+|\[[^\]]+\]|prose)/g) || []).size >= 3,
+    re: /max-w-(?:sm|md|lg|xl|[2-7]xl|screen-\w+|\[[^\]]+\]|prose)/,
+    msg: "Three or more distinct content widths in one file",
+    fix: "One canonical content-width token, consumed by header, footer and every section. Mixed widths read as misalignment at section boundaries.",
+  },
 ];
 
 /* -------------------------------- helpers --------------------------------- */
@@ -432,6 +448,7 @@ function auditFile(filePath) {
 
   for (const rule of RULES) {
     if (!rule.exts.has(ext)) continue;
+    if (rule.pathExclude && rule.pathExclude.test(filePath)) continue;
     const content = rule.raw ? raw : blanked;
     if (rule.onlyIf && !rule.onlyIf(content)) continue;
 
@@ -629,6 +646,98 @@ function projectRules(files, contentsById, root) {
       }
     }
   }
+
+  // ---- Tier 2: primitive discipline and build-gate wiring (field learnings) ----
+  const norm = (f) => f.replace(/\\/g, "/");
+  const primDirRe = /(components\/ui|components\/primitives|ui\/primitives)\//;
+  const primFiles = files.filter((f) => primDirRe.test(norm(f)));
+  if (primFiles.length) {
+    const primNames = primFiles.map((f) => (norm(f).split("/").pop() || "").replace(/\.\w+$/, "").toLowerCase());
+    const hasFormPrim = primNames.some((n) => /(input|field|select|textarea|form|control)/.test(n));
+    const hasTablePrim = primNames.some((n) => /table/.test(n));
+    for (const f of files) {
+      if (primDirRe.test(norm(f))) continue;
+      if (!MARKUP.has(extname(f).toLowerCase())) continue; // app-layer means rendered markup, not scripts
+      const c = contentsById.get(f) || "";
+      if (hasFormPrim && /<(select|textarea)\b|<input\b(?![^>]*type="hidden")/.test(c)) {
+        findings.push({
+          id: "system/native-control-in-app-layer", severity: "moderate", confidence: "review",
+          file: f, line: 1, evidence: "native form control while a form primitive exists in the primitives directory",
+          msg: "Native control bypasses the form primitive",
+          fix: "App screens consume the primitive: tokens, focus ring, density and states come with it. Native controls inherit none of them.",
+        });
+      }
+      if (hasTablePrim && /<table\b/.test(c)) {
+        findings.push({
+          id: "system/hand-rolled-table", severity: "moderate", confidence: "review",
+          file: f, line: 1, evidence: "inline <table> while a table primitive exists",
+          msg: "Hand-rolled table bypasses the data-table primitive",
+          fix: "Inline tables drift: no zebra, different paddings, no empty/loading states. Route tabular data through the primitive.",
+        });
+      }
+    }
+    for (const pf of primFiles) {
+      const base = (norm(pf).split("/").pop() || "").replace(/\.\w+$/, "");
+      if (/^index$/i.test(base)) continue;
+      const needle = base.toLowerCase();
+      const used = files.some((f) => f !== pf && (contentsById.get(f) || "").toLowerCase().includes(needle));
+      if (!used) {
+        findings.push({
+          id: "system/orphan-primitive", severity: "moderate", confidence: "certain",
+          file: pf, line: 1, evidence: "no other scanned file references it",
+          msg: "Primitive with zero consumers",
+          fix: "Work invested here reaches nobody while screens hand-roll their own version. Adopt it everywhere or delete it; grep consumers before investing.",
+        });
+      }
+    }
+  }
+
+  // Duplicated glyphs pasted across components (one primitive per concept)
+  const dMap = new Map();
+  for (const f of files) {
+    const c = contentsById.get(f) || "";
+    const re = /<path[^>]*\sd="([^"]{40,})"/g;
+    const seenHere = new Set();
+    let m;
+    while ((m = re.exec(c))) {
+      if (seenHere.has(m[1])) continue;
+      seenHere.add(m[1]);
+      const arr = dMap.get(m[1]) || [];
+      arr.push(f);
+      dMap.set(m[1], arr);
+    }
+  }
+  for (const [, fl] of dMap) {
+    if (fl.length >= 3) {
+      findings.push({
+        id: "system/duplicate-primitive", severity: "moderate", confidence: "review",
+        file: fl[0], line: 1, evidence: `the same svg path is pasted in ${fl.length} files`,
+        msg: "Duplicated glyph across components",
+        fix: "One icon module per glyph. Copy-pasted paths drift in stroke, size and meaning; extract the primitive.",
+      });
+      break;
+    }
+  }
+
+  // Design gate exists but the build never runs it
+  try {
+    const pkgPath = join(root, "package.json");
+    if (existsSync(pkgPath)) {
+      const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
+      const scripts = pkg.scripts || {};
+      const gateKey = Object.keys(scripts).find((k) => /design|lexia/i.test(k + " " + scripts[k]) && /audit|lint/i.test(k + " " + scripts[k]));
+      const build = String(scripts.build || "");
+      if (gateKey && build && !build.includes(gateKey) && !/lexia/i.test(build)) {
+        findings.push({
+          id: "system/design-gate-not-wired", severity: "moderate", confidence: "certain",
+          file: pkgPath, line: 1, evidence: `script "${gateKey}" exists; build runs "${build}"`,
+          msg: "Design lint exists but the build does not run it",
+          fix: "Wire the gate into the build command. A lint outside the build catches drift only when someone remembers to run it.",
+        });
+      }
+    }
+  } catch { /* unparseable package.json — skip */ }
+
   return findings;
 }
 
@@ -739,7 +848,7 @@ function listRules() {
   for (const r of RULES) {
     console.log(`${r.id} | ${r.severity} | ${r.confidence} | ${[...r.exts].join(",")}`);
   }
-  console.log(`\n${RULES.length} file-level rules + 5 project-level rules (project/no-reduced-motion-anywhere, system/off-token-colors, system/dark-variant-desync, system/near-duplicate-tokens, system/accent-ink-indistinct)`);
+  console.log(`\n${RULES.length} file-level rules + 10 project-level rules (project/no-reduced-motion-anywhere, system/off-token-colors, system/dark-variant-desync, system/near-duplicate-tokens, system/accent-ink-indistinct, system/native-control-in-app-layer, system/hand-rolled-table, system/orphan-primitive, system/duplicate-primitive, system/design-gate-not-wired)`);
   console.log(`Inline waivers: lexia-disable-file <rule-id> | lexia-disable-next-line <rule-id> (comment; pair with a decisions.jsonl entry)`);
 }
 

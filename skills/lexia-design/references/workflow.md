@@ -55,7 +55,10 @@ VISUAL_REGRESSIONS = 0
    flows, content fabrications, build errors.
 10. FIX. Complete tier 1 before touching tier 2; mixed-tier fixing
     loses the audit trail. Within a tier, top-3 by impact. No cosmetic
-    work while functional errors exist. Waive deliberate deviations the
+    work while functional errors exist. If a finding category already
+    appeared in the previous iteration, do not fix instances again:
+    escalate to the root cause (adopt the primitive, add the invariant,
+    wire the gate into the build) and fix THAT. Waive deliberate deviations the
     same day, twice: inline (`lexia-disable-next-line <rule-id>`) and in
     decisions.jsonl.
 11. RE-RENDER. Same breakpoints, same pages.

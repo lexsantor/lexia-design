@@ -115,3 +115,18 @@ visual debt, system coherence. Selection guidance:
   required; say so instead of inflating certainty.
 - Do not fix during the audit. Findings first, fixes as a separate step
   (the orchestrator or the user decides what to act on).
+- Root-cause escalation: when the same finding CATEGORY appears in two or
+  more consecutive audits, stop reporting instances and name the cause:
+  an under-adopted primitive or a missing invariant. Patching the
+  screenshot is not fixing the defect, and to the client it reads as "it
+  keeps breaking". Recommend the invariant (build gate, primitive
+  adoption) as the fix, not another pass of instance edits.
+- Automate only what grep can decide; judge the rest. Exemptions to
+  mechanical rules are NAMED lists with written reasons (financial tables
+  that need a footer row, print and email templates, dense inline
+  editors) recorded in decisions.jsonl and honored via lexia-disable
+  directives. A silent skip destroys trust in the whole gate.
+- If the project defines a design-lint script, verify the BUILD actually
+  runs it, and on deploy that the host's build command runs the wrapper
+  [system/design-gate-not-wired]: a gate outside the build catches drift
+  only when someone remembers.

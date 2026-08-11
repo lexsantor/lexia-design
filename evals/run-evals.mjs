@@ -58,6 +58,11 @@ function detectorRuleIds() {
   ids.add("system/dark-variant-desync");
   ids.add("system/near-duplicate-tokens");
   ids.add("system/accent-ink-indistinct");
+  ids.add("system/native-control-in-app-layer");
+  ids.add("system/hand-rolled-table");
+  ids.add("system/orphan-primitive");
+  ids.add("system/duplicate-primitive");
+  ids.add("system/design-gate-not-wired");
   return ids;
 }
 
