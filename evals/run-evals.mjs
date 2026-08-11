@@ -52,7 +52,7 @@ function detectorRuleIds() {
   const ids = new Set();
   for (const line of out.split("\n")) {
     const id = line.split("|")[0]?.trim();
-    if (id && id.includes("/")) ids.add(id);
+    if (id && /^[a-z0-9-]+\/[a-z0-9-]+$/.test(id)) ids.add(id);
   }
   ids.add("project/no-reduced-motion-anywhere");
   ids.add("system/off-token-colors");
@@ -77,6 +77,17 @@ const GATE_DIMS = [
   "SPACING_AND_RHYTHM", "RESPONSIVENESS", "SYSTEM_COHERENCE", "DISTINCTIVENESS",
   "MOTION_QUALITY", "PERFORMANCE", "PRODUCTION_READINESS",
 ];
+
+
+function smokeCoverage() {
+  console.log("\n== Rule coverage (every rule proven by a fixture) ==");
+  const all = detectorRuleIds();
+  const manifest = JSON.parse(readFileSync(join(EVALS_DIR, "fixtures", "manifest.json"), "utf8"));
+  const covered = new Set(manifest.fixtures.flatMap((f) => f.expectRules || []));
+  const uncovered = [...all].filter((id) => !covered.has(id));
+  if (uncovered.length) bad(`rules with no fixture asserting they fire: ${uncovered.join(", ")}`);
+  else ok(`${all.size} rules, all covered by fixture expectations`);
+}
 
 function smokeGateMath() {
   console.log("\n== Score gate arithmetic (black-box, subprocess) ==");
@@ -229,6 +240,7 @@ function main() {
     smokeStructure();
     smokeCases();
     smokeFixtures();
+    smokeCoverage();
     smokeGateMath();
     console.log(`\n${failures === 0 ? "ALL SMOKE CHECKS PASSED" : `${failures} FAILURE(S)`}`);
     process.exit(failures === 0 ? 0 : 1);

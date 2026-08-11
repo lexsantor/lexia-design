@@ -4,6 +4,53 @@ All notable changes to lexia-design. Format: Keep a Changelog; versioning:
 semver. Rule changes should cite the observed failure or source update that
 motivated them (changelog-driven hardening).
 
+## [0.7.2] - 2026-08-11
+
+First real run of /lexia-design, on the plugin's own landing page. The
+loop worked exactly as designed - including against its authors.
+
+### The cycle, honestly
+
+- Iteration 1 gated the landing at 49/100 F (raw 71.8): the specimen
+  report in the terminal card presented numbers that existed nowhere -
+  an unlabeled simulation, flagged by the plugin's own content doctrine
+  and capped by its own gate. Iteration 2: 80.6/100 B, +31.6. Stopped by
+  operator with two gates still failing (total 8.0 < 8.5,
+  distinctiveness 7.0 < 7.5); follow-ups named in the committed
+  .lexia-design/ memory, which now lives in-repo as a real artifact.
+
+### Landing (iteration-2 fix set)
+
+- The terminal now renders THIS page's actual committed gate output,
+  failing gates included; footer recurs the score-bar motif with the
+  page's real audit state.
+- AA contrast: ink-faint lifted to 4.78:1 / 4.64:1 worst-case
+  (computed, both themes); light ::selection fixed.
+- Keyboard: scroll regions focusable and labeled; anchors clear the
+  sticky header; nav/footer targets padded.
+- Copy action: aria-live status, interruption-safe timers, working
+  clipboard-denied fallback, no width jitter.
+- Motion: signature fill is a viewport-gated one-shot scaleX (it fired
+  below the fold at load, unseen); false-affordance card lift removed.
+- Priorities de-carded into a typographic ladder; the four
+  never-outranked principles carry the accent.
+- og:image + twitter card; semantic term-bar; punctuation and wrap
+  fixes; green reserved for pass states.
+
+### Detector and evals
+
+- 4 previously fixture-less rules now proven (scroll-hijack-lib,
+  card-density, no-reduced-motion-anywhere, off-token-colors), and the
+  smoke suite asserts full coverage: a rule without a fixture now fails
+  CI. "Every one fixture-proven" was false when the landing claimed it;
+  it is true now and enforced.
+- Third self-audit precision fix: system/alpha-value-missing scoped to
+  slash-digits inside class attribute values ("49/100" in prose no
+  longer reads as an opacity utility). Rule-id parser in run-evals
+  hardened.
+- README sample report explicitly labeled as illustrative, linking to
+  the landing's real one.
+
 ## [0.7.1] - 2026-08-11
 
 Hardening without new taste rules, chosen as the highest-value work that

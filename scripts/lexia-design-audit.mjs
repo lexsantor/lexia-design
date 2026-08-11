@@ -304,7 +304,7 @@ const RULES = [
     kind: "line",
     re: /--[\w-]+\s*:\s*(?:oklch|lch|lab|hsl|rgb|color)\([^;]*\)\s*;/g,
     valueTest: (m) => !/<alpha-value>|\/\s*(?:var\(|<)/.test(m[0]),
-    onlyIf: (c) => /@theme/.test(c) || (/class(?:Name)?\s*=/.test(c) && /[\w)\]]\/\d{1,3}(?=["'\s])/.test(c)),
+    onlyIf: (c) => /@theme/.test(c) || /class(?:Name)?\s*=\s*["'][^"']*[\w\]]\/\d{1,3}(?:\s|["'])/.test(c),
     msg: "Color token declared without an alpha placeholder",
     fix: "Opacity modifiers silently emit nothing on opaque color functions. Declare the alpha slot (e.g. oklch(L C H / <alpha-value>)) before any /opacity utility exists.",
   },

@@ -8,7 +8,7 @@
 <br/>
 
 [![CI](https://github.com/lexsantor/lexia-design/actions/workflows/ci.yml/badge.svg)](https://github.com/lexsantor/lexia-design/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-0.7.1-1f6feb)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.7.2-1f6feb)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-3fb950)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%E2%89%A518-5a6472)](#install)
 [![Deps](https://img.shields.io/badge/runtime%20deps-0-5a6472)](scripts)
@@ -94,7 +94,8 @@ beside every dimension.
 ## The report
 
 Every run ends with the same artifact, whatever the verdict. Blockers first,
-never the score.
+never the score. The table below is an illustrative sample of the format;
+the landing shows [a real one](https://lexsantor.github.io/lexia-design/#report).
 
 <table>
 <tr><td>

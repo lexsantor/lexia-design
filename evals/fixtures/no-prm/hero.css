@@ -1,0 +1,8 @@
+/* Fixture dir: animates with no reduced-motion handling anywhere in the
+   project (project/no-reduced-motion-anywhere). */
+@keyframes slide-in {
+  from { transform: translateY(16px); opacity: 0; }
+}
+.hero-title {
+  animation: slide-in 400ms ease-out;
+}

@@ -10,6 +10,10 @@
 <meta property="og:description" content="79 detector rules, 15 scored dimensions, a bounded convergence loop and a score that cannot hide a blocker. Zero runtime dependencies.">
 <meta property="og:url" content="https://lexsantor.github.io/lexia-design/">
 <meta property="og:type" content="website">
+<meta property="og:image" content="https://lexsantor.github.io/lexia-design/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='hsl(215 28%25 9%25)'/%3E%3Crect x='6' y='21' width='20' height='3' rx='1.5' fill='hsl(215 14%25 24%25)'/%3E%3Crect x='6' y='21' width='16' height='3' rx='1.5' fill='hsl(16 100%25 60%25)'/%3E%3Ctext x='6' y='17' font-family='ui-monospace,monospace' font-size='12' font-weight='700' fill='hsl(210 17%25 93%25)'%3ELX%3C/text%3E%3C/svg%3E">
 <style>
   :root {
@@ -20,7 +24,7 @@
     --border: hsl(212 12% 24%);
     --ink: hsl(210 17% 93%);
     --ink-mute: hsl(212 10% 61%);
-    --ink-faint: hsl(211 8% 47%);
+    --ink-faint: hsl(211 8% 55%);
     --accent: hsl(16 100% 60%);
     --accent-ink: hsl(16 100% 66%);
     --ok: hsl(137 55% 47%);
@@ -37,16 +41,17 @@
       --border: hsl(211 14% 78%);
       --ink: hsl(214 25% 14%);
       --ink-mute: hsl(213 10% 38%);
-      --ink-faint: hsl(212 9% 50%);
+      --ink-faint: hsl(212 9% 42%);
       --accent: hsl(19 92% 44%);
       --accent-ink: hsl(19 92% 40%);
       --ok: hsl(137 65% 28%);
       --shadow-hue: hsl(214 30% 55%);
+      --selection: hsl(19 92% 40%);
     }
   }
 
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; scroll-padding-top: 76px; }
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -63,7 +68,7 @@
   a { color: var(--accent-ink); text-decoration: none; }
   a:hover { text-decoration: underline; text-underline-offset: 3px; }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
-  ::selection { background: var(--accent); color: var(--canvas); }
+  ::selection { background: var(--selection, var(--accent)); color: var(--canvas); }
 
   .skip {
     position: absolute; left: -999px; top: 8px; z-index: 10;
@@ -84,7 +89,8 @@
   }
   .wordmark { font-family: var(--mono); font-weight: 700; font-size: 15px; color: var(--ink); letter-spacing: -0.3px; }
   .wordmark .dot { color: var(--accent); }
-  nav.top { display: flex; gap: 22px; font-size: 14px; }
+  nav.top { display: flex; gap: 14px; font-size: 14px; }
+  nav.top a { padding: 10px 4px; }
   nav.top a { color: var(--ink-mute); }
   nav.top a:hover { color: var(--ink); text-decoration: none; }
 
@@ -112,16 +118,33 @@
     margin-left: auto; flex-shrink: 0;
     font: 600 12.5px var(--sans); color: var(--ink-mute);
     background: var(--panel-2); border: 1px solid var(--border); border-radius: 7px;
-    padding: 6px 12px; cursor: pointer;
+    padding: 6px 12px; cursor: pointer; min-width: 64px;
     transition: color 160ms ease, border-color 160ms ease;
   }
   .copy:hover { color: var(--ink); border-color: var(--ink-faint); }
   .copy[data-done="1"] { color: var(--ok); border-color: var(--ok); }
 
+  .proof {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin: 18px 0 0; font-size: 14px; color: var(--ink-faint); max-width: 640px;
+  }
+  .proof code {
+    font-family: var(--mono); font-size: 12.5px; color: var(--ink-mute);
+    background: var(--panel); border: 1px solid var(--hairline); border-radius: 6px; padding: 2px 8px;
+  }
+  .proof b { color: var(--ok); font-weight: 700; }
+  .proof a { color: var(--ink-mute); text-decoration: underline; text-underline-offset: 3px; }
+  .proof-mark { width: 8px; height: 8px; border-radius: 2px; background: var(--ok); flex-shrink: 0; }
+  .nowrap { white-space: nowrap; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 48px; }
   @media (max-width: 760px) { .stats { grid-template-columns: repeat(2, 1fr); } }
   .stat { border: 1px solid var(--hairline); border-radius: 12px; padding: 18px 20px; background: var(--panel); }
-  .stat b { display: block; font-size: 30px; font-weight: 750; letter-spacing: -1px; color: var(--accent); }
+  .stat b { display: block; font-size: 34px; font-weight: 750; letter-spacing: -1px; color: var(--accent); font-variant-numeric: tabular-nums; }
   .stat.ok b { color: var(--ok); }
   .stat span { font-size: 13px; color: var(--ink-mute); }
 
@@ -138,18 +161,21 @@
     display: flex; align-items: center; gap: 8px;
     padding: 12px 16px; border-bottom: 1px solid var(--hairline); background: var(--panel-2);
   }
-  .term-bar i { width: 11px; height: 11px; border-radius: 50%; background: var(--border); }
-  .term-bar em { font: 12.5px var(--sans); font-style: normal; color: var(--ink-faint); margin: 0 auto; }
+  .term-bar .term-dot { width: 11px; height: 11px; border-radius: 50%; background: var(--border); }
+  .term-bar .term-title { font: 12.5px var(--sans); color: var(--ink-faint); margin: 0 auto; }
   .term pre {
     margin: 0; padding: 22px 24px; overflow-x: auto;
     font: 14px/1.75 var(--mono); color: var(--ink);
+    font-variant-numeric: tabular-nums;
   }
   .term .c-ok { color: var(--ok); }
   .term .c-acc { color: var(--accent-ink); font-weight: 700; }
   .term .c-mut { color: var(--ink-mute); }
   .term .c-fnt { color: var(--ink-faint); }
   .bar { display: flex; height: 6px; border-radius: 3px; background: var(--hairline); overflow: hidden; max-width: 560px; margin: 10px 0 18px; }
-  .bar i { display: block; background: var(--accent); width: 83.1%; }
+  .bar i { display: block; background: var(--accent); width: 80.6%; transform-origin: left; }
+  .bar.armed i { transform: scaleX(0); }
+  .bar.armed.run i { transform: scaleX(1); transition: transform 600ms ease-out; }
 
   .caps { margin-top: 36px; max-width: 860px; }
   .caps table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
@@ -179,24 +205,30 @@
   .fam { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
   @media (max-width: 860px) { .fam { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 560px) { .fam { grid-template-columns: 1fr; } }
-  .fam article { border: 1px solid var(--hairline); border-radius: 12px; padding: 18px 20px; background: var(--panel); }
+  .fam article {
+    border: 1px solid var(--hairline); border-radius: 12px; padding: 18px 20px; background: var(--panel);
+    transition: border-color 180ms ease;
+  }
+  .fam article:hover { border-color: var(--ink-faint); }
   .fam h3 { margin: 0 0 2px; font: 700 15px var(--mono); color: var(--ink); }
   .fam h3 small { color: var(--accent-ink); font-weight: 700; margin-left: 6px; }
   .fam p { margin: 8px 0 0; font-size: 13.5px; color: var(--ink-mute); }
   .fam-note { margin-top: 18px; font-size: 14px; color: var(--ink-faint); max-width: 70ch; }
   .fam-note code, .prio code, .verdicts code { font-family: var(--mono); font-size: 0.92em; background: var(--panel-2); border: 1px solid var(--hairline); border-radius: 5px; padding: 1px 6px; color: var(--ink-mute); }
 
-  .prio ol { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; counter-reset: prio; }
-  @media (max-width: 860px) { .prio ol { grid-template-columns: repeat(2, 1fr); } }
-  .prio li {
-    counter-increment: prio; border: 1px solid var(--hairline); border-radius: 10px;
-    padding: 12px 14px; font-size: 13.5px; color: var(--ink-mute); background: var(--panel);
+  .ladder { margin: 0; padding: 0; list-style: none; max-width: 560px; }
+  .ladder li {
+    display: flex; align-items: baseline; gap: 18px;
+    padding: 9px 0; border-bottom: 1px solid var(--hairline);
+    font-size: 16px; color: var(--ink-mute);
   }
-  .prio li::before {
-    content: counter(prio); display: block;
-    font: 750 20px var(--sans); color: var(--ink); letter-spacing: -0.5px;
+  .ladder li b {
+    font: 700 15px var(--mono); color: var(--ink-faint);
+    min-width: 2ch; text-align: right; font-variant-numeric: tabular-nums;
   }
-  .prio li:first-child, .prio li:nth-child(2), .prio li:nth-child(3), .prio li:nth-child(4) { border-color: color-mix(in srgb, var(--accent) 40%, var(--hairline)); }
+  .ladder li.hard { color: var(--ink); font-weight: 600; }
+  .ladder li.hard b { color: var(--accent-ink); }
+  .ladder li:last-child { border-bottom: 0; }
   .prio-note { margin-top: 18px; font-size: 14px; color: var(--ink-mute); max-width: 66ch; }
 
   .install { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
@@ -208,8 +240,10 @@
 
   footer.site { padding: 40px 0 56px; }
   footer.site .wrap { display: flex; flex-wrap: wrap; gap: 10px 26px; align-items: center; font-size: 14px; color: var(--ink-faint); }
-  footer.site a { color: var(--ink-mute); }
-  .verdicts { font-size: 13.5px; color: var(--ink-faint); }
+  footer.site a { color: var(--ink-mute); padding: 8px 0; display: inline-block; }
+  .verdicts { font-size: 13.5px; color: var(--ink-faint); display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .foot-bar { display: inline-flex; width: 56px; height: 4px; border-radius: 2px; background: var(--hairline); overflow: hidden; }
+  .foot-bar i { display: block; width: 100%; background: var(--ok); }
 </style>
 </head>
 <body>
@@ -240,14 +274,20 @@
         a blocker cannot slip past.
       </p>
       <div class="cmd">
-        <code><span class="p">$</span> /plugin marketplace add lexsantor/lexia-design</code>
+        <code tabindex="0" role="region" aria-label="Install command"><span class="p">$</span> /plugin marketplace add lexsantor/lexia-design</code>
         <button class="copy" type="button" data-copy="/plugin marketplace add lexsantor/lexia-design">Copy</button>
       </div>
+      <p class="proof">
+        <span class="proof-mark" aria-hidden="true"></span>
+        <code>lexia-design-audit docs/index.html</code> reports
+        <b>0 findings</b> on this page.
+        <span class="nowrap"><a href="https://github.com/lexsantor/lexia-design/blob/main/.github/workflows/ci.yml">Enforced in CI</a> on every push.</span>
+      </p>
       <div class="stats">
         <div class="stat"><b>79</b><span>detector rules, every one fixture-proven</span></div>
         <div class="stat"><b>15</b><span>scored dimensions, weighted and capped</span></div>
         <div class="stat"><b>&le;4</b><span>iterations; the loop is bounded on purpose</span></div>
-        <div class="stat ok"><b>0</b><span>runtime dependencies; plain Node 18+</span></div>
+        <div class="stat"><b>0</b><span>runtime dependencies; plain Node 18+</span></div>
       </div>
     </div>
   </div>
@@ -260,13 +300,23 @@
         closes with a report. Blockers print first. The score never leads.
       </p>
       <div class="term">
-        <div class="term-bar"><i></i><i></i><i></i><em>.lexia-design/DESIGN-REPORT.md</em></div>
+        <div class="term-bar"><span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span><span class="term-title">.lexia-design/DESIGN-REPORT.md · this page, committed in-repo</span></div>
         <pre>
-<span class="c-fnt">$ /lexia-design · iteration 3 · audit complete</span>
+<span class="c-fnt">$ /lexia-design · this page · iteration 2 · audit complete</span>
 
-<span class="c-ok">&gt; No blocking issues open.</span>
+<span class="c-ok">&gt; No blocking issues open. Iteration 1 gated at 49/100 (fabrication cap): its
+&gt; specimen report showed numbers that existed nowhere. This block now shows the
+&gt; page's own gate output, committed in .lexia-design/.</span>
 
-<b>LEXIA SCORE: <span class="c-acc">83.1 / 100</span> · B</b> <span class="c-mut">(ship with named follow-ups)</span>
+<b>LEXIA SCORE: <span class="c-acc">80.6 / 100</span> · B</b> <span class="c-mut">(ship with named follow-ups)</span>
+</pre>
+        <div style="padding: 0 24px;" aria-hidden="true"><div class="bar"><i></i></div></div>
+        <pre style="padding-top: 0;">
+<span class="c-mut">coverage    <span style="color: var(--ink);">detector + 3 reviewer agents · rendered 375 / 768 / 1440 + light</span></span>
+<span class="c-mut">dimensions  <span style="color: var(--ink);">15 of 15 scored</span></span>
+<span class="c-mut">delta       <span class="c-ok">+31.6 vs iteration 1</span> <span class="c-fnt">· fabrication cap lifted</span></span>
+<span class="c-mut">gates       <span style="color: var(--ink);">total 8.0 &lt; 8.5 · distinctiveness 7.0 &lt; 7.5 · verdict: continue</span></span>
+<span class="c-mut">verdicts    <span style="color: var(--ink);">26 findings · 23 true positive · 3 mitigated · 0 false positive</span></span>
 </pre>
         <div style="padding: 0 24px;" aria-hidden="true"><div class="bar"><i></i></div></div>
         <pre style="padding-top: 0;">
@@ -332,7 +382,7 @@
         <article><h3>motion/<small>10</small></h3><p>Layout-property transitions, entrances from scale zero, counters resting at zero, a missing reduced-motion guard.</p></article>
         <article><h3>i18n/<small>7</small></h3><p>Providers without an explicit locale, formatters on the browser default, leaf/parent key collisions, partial catalogs.</p></article>
         <article><h3>conversion/<small>3</small></h3><p>Vague action labels, identity fields fighting autofill, forms asking for more than the product uses.</p></article>
-        <article><h3>correctness/ ux/ layout/ perf/<small>5</small></h3><p>Server-local midnight in date logic, native confirm dialogs, order against asymmetric grid tracks, broad will-change, project-wide reduced-motion.</p></article>
+        <article><h3>correctness/ ux/ layout/ perf/ project/<small>5</small></h3><p>Server-local midnight in date logic, native confirm dialogs, order against asymmetric grid tracks, broad will-change, project-wide reduced-motion.</p></article>
       </div>
       <p class="fam-note">
         Twelve of the 79 are project-scope rules: they read structure
@@ -346,17 +396,17 @@
     <div class="wrap">
       <h2>When two principles collide, the lower number wins</h2>
       <p class="sub">The order is fixed and the arbitration is recorded, so taste never quietly outranks evidence.</p>
-      <ol>
-        <li>user's objective</li>
-        <li>clarity and usability</li>
-        <li>accessibility</li>
-        <li>content truthfulness</li>
-        <li>system coherence</li>
-        <li>performance</li>
-        <li>visual identity</li>
-        <li>distinction</li>
-        <li>motion</li>
-        <li>implementation convenience</li>
+      <ol class="ladder">
+        <li class="hard"><b>1</b> user's objective</li>
+        <li class="hard"><b>2</b> clarity and usability</li>
+        <li class="hard"><b>3</b> accessibility</li>
+        <li class="hard"><b>4</b> content truthfulness</li>
+        <li><b>5</b> system coherence</li>
+        <li><b>6</b> performance</li>
+        <li><b>7</b> visual identity</li>
+        <li><b>8</b> distinction</li>
+        <li><b>9</b> motion</li>
+        <li><b>10</b> implementation convenience</li>
       </ol>
       <p class="prio-note">
         An explicit brief outranks the plugin's taste. It never outranks usability evidence,
@@ -400,22 +450,51 @@ claude --plugin-dir ./lexia-design</pre>
     <a href="https://github.com/lexsantor/lexia-design/blob/main/CHANGELOG.md">Changelog</a>
     <a href="https://github.com/lexsantor/lexia-design/blob/main/LIMITATIONS.md">Limitations</a>
     <a href="https://github.com/lexsantor/lexia-design/blob/main/SOURCES.md">Sources</a>
-    <span class="verdicts">This page is audited by the repo's own detector in CI: <code>lexia-design-audit docs/index.html</code></span>
+    <span class="verdicts"><span class="foot-bar" aria-hidden="true"><i></i></span> <code>lexia-design-audit docs/index.html</code> · 0 findings, enforced in CI</span>
   </div>
 </footer>
 
+<span class="sr-only" role="status" aria-live="polite" id="copy-status"></span>
 <script>
+  const status = document.getElementById("copy-status");
+  const timers = new WeakMap();
   for (const btn of document.querySelectorAll(".copy")) {
     btn.addEventListener("click", async () => {
+      clearTimeout(timers.get(btn));
       try {
         await navigator.clipboard.writeText(btn.dataset.copy);
         btn.dataset.done = "1";
         btn.textContent = "Copied";
-        setTimeout(() => { btn.dataset.done = "0"; btn.textContent = "Copy"; }, 1600);
+        status.textContent = "Command copied to clipboard";
       } catch {
-        btn.textContent = "Select and copy";
+        const code = btn.parentElement.querySelector("code");
+        const range = document.createRange();
+        range.selectNodeContents(code);
+        const sel = getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        btn.textContent = "Press Ctrl+C";
+        status.textContent = "Clipboard unavailable. The command is selected; copy it manually.";
       }
+      timers.set(btn, setTimeout(() => {
+        btn.dataset.done = "0";
+        btn.textContent = "Copy";
+        status.textContent = "";
+      }, 2000));
     });
+  }
+  const bar = document.querySelector(".bar");
+  if (bar && !matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+    bar.classList.add("armed");
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          requestAnimationFrame(() => bar.classList.add("run"));
+          io.disconnect();
+        }
+      }
+    }, { threshold: 0.6 });
+    io.observe(bar);
   }
 </script>
 </body>

@@ -157,6 +157,30 @@
         "conversion/autocomplete-missing",
         "conversion/form-field-overload"
       ]
+    },
+    {
+      "file": "scroll-hijack.ts",
+      "expectRules": [
+        "motion/scroll-hijack-lib"
+      ]
+    },
+    {
+      "file": "card-dense.tsx",
+      "expectRules": [
+        "slop/card-density"
+      ]
+    },
+    {
+      "dir": "no-prm",
+      "expectRules": [
+        "project/no-reduced-motion-anywhere"
+      ]
+    },
+    {
+      "dir": "off-token",
+      "expectRules": [
+        "system/off-token-colors"
+      ]
     }
   ]
 }
