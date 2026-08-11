@@ -14,6 +14,14 @@
 [![Deps](https://img.shields.io/badge/runtime%20deps-0-5a6472)](scripts)
 
 <br/>
+<br/>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/stats-dark.svg">
+  <img alt="72 detector rules, 15 scored dimensions, at most 4 iterations, zero runtime dependencies" src=".github/assets/stats-light.svg" width="100%">
+</picture>
+
+<br/>
 
 **[What it does](#what-it-does)** &nbsp;·&nbsp;
 **[The report](#the-report)** &nbsp;·&nbsp;
@@ -37,37 +45,18 @@ lexia-design adds that loop.
 
 <table>
 <tr>
-<td width="33%" valign="top">
-
-**Commits to a direction**
-
-A contract with falsifiable
-commitments, not mood words.
-Twelve territories, each with
-a "breaks if" list an audit
-can check.
-
-</td>
-<td width="33%" valign="top">
-
-**Checks its own work**
-
-Fifty-seven deterministic rules plus
-fresh-context reviewers, in
-isolated tracks. Every finding
-verified before it is acted on.
-
-</td>
-<td width="33%" valign="top">
-
-**Reports a score it cannot game**
-
-One number out of 100, capped
-so a blocker can never hide
-behind it, with the evidence
-beside every dimension.
-
-</td>
+<td width="33%"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/card-direction-dark.svg">
+  <img alt="Commits to a direction: a contract with falsifiable commitments, twelve territories, each with a breaks-if list an audit can check" src=".github/assets/card-direction-light.svg" width="100%">
+</picture></td>
+<td width="33%"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/card-audit-dark.svg">
+  <img alt="Checks its own work: 72 deterministic rules plus fresh-context reviewers in isolated tracks; every finding verified before it is acted on" src=".github/assets/card-audit-light.svg" width="100%">
+</picture></td>
+<td width="33%"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/card-score-dark.svg">
+  <img alt="A score it cannot game: one number out of 100, capped so a blocker can never hide behind it, with the evidence beside every dimension" src=".github/assets/card-score-light.svg" width="100%">
+</picture></td>
 </tr>
 </table>
 
@@ -89,6 +78,20 @@ beside every dimension.
 
 Every run ends with the same artifact, whatever the verdict. Blockers first,
 never the score.
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/report-dark.svg">
+  <img alt="Sample DESIGN-REPORT: no blockers open, LEXIA SCORE 83.1 of 100, band B, coverage and verdicts listed" src=".github/assets/report-light.svg" width="760">
+</picture>
+
+</div>
+
+<details>
+<summary><b>The same report, as the markdown it actually writes</b></summary>
+
+<br/>
 
 <table>
 <tr><td>
@@ -115,6 +118,8 @@ LEXIA SCORE: 83.1 / 100 — B (Ship with named follow-ups)
 
 </td></tr>
 </table>
+
+</details>
 
 <details>
 <summary><b>How the number is built, and why it cannot lie</b></summary>
@@ -214,23 +219,10 @@ of backend, data and infra work.
 
 ## How it works
 
-```mermaid
-flowchart LR
-    A[Inspect<br/>stack, memory, before-state] --> B[Direct<br/>surface, dials, contract]
-    B --> C[Implement<br/>content, tokens, states]
-    C --> D[Render<br/>375 / 768 / 1440]
-    D --> E[Audit]
-    E --> F{Gate}
-    F -->|thresholds unmet| G[Fix top tier]
-    G --> D
-    F -->|converged, no progress,<br/>or 4 iterations| H[Report]
-
-    subgraph E [Audit: two isolated tracks]
-        direction TB
-        E1[Detector: 72 deterministic rules]
-        E2[Reviewers: fresh context, disjoint lenses]
-    end
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/pipeline-dark.svg">
+  <img alt="Pipeline: inspect, direct, build, then a bounded render-audit-gate loop of at most four iterations, then the report" src=".github/assets/pipeline-light.svg" width="100%">
+</picture>
 
 The loop is bounded on purpose: four iterations, a measurable stop condition,
 and an honest report when thresholds are not met. Open-ended self-QA spends

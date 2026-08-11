@@ -8,7 +8,7 @@
     <line x1="880" y1="60" x2="880" y2="190" stroke="#D0D7DE" stroke-width="1"/>
     <text x="928" y="86" fill="#57606A" font-size="12" font-weight="600" letter-spacing="3.5">LEXIA SCORE</text>
     <text x="928" y="152" fill="#D93900" font-size="60" font-weight="700" letter-spacing="-1.5">83.1</text>
-    <text x="1058" y="152" fill="#6E7781" font-size="22" font-weight="500">/ 100</text>
+    <text x="1092" y="152" fill="#6E7781" font-size="22" font-weight="500">/ 100</text>
     <rect x="928" y="174" width="288" height="4" rx="2" fill="#D0D7DE"/>
     <rect x="928" y="174" width="239" height="4" rx="2" fill="#D93900"/>
   </g>
