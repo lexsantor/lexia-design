@@ -4,6 +4,30 @@ All notable changes to lexia-design. Format: Keep a Changelog; versioning:
 semver. Rule changes should cite the observed failure or source update that
 motivated them (changelog-driven hardening).
 
+## [0.7.1] - 2026-08-11
+
+Hardening without new taste rules, chosen as the highest-value work that
+needs no field data: verify the arithmetic the whole gate rests on, and
+make health and waivers inspectable.
+
+### Added
+
+- Gate arithmetic joins the smoke suite: 7 black-box subprocess cases
+  prove the weighted mean (usability 6 with the rest at 9 must yield
+  exactly 87.1), n/a renormalization (motion n/a still scores 90, never
+  penalized), and every cap (49 fabrication, 59 critical, 79 regression,
+  89 not-rendered). The /100 was previously enforced by usage, not by a
+  test.
+- `lexia-design-score.mjs doctor`: install health (Node version,
+  templates, detector present) plus project-memory health (preferences
+  parse, history lines parse, TRAJECTORY.md present). Exit 1 only on a
+  broken install.
+- `lexia-design-audit.mjs --waivers [dir]`: every inline waiver with
+  file:line, rule ids and its recorded reason - the mechanical half of
+  the "waivers pair with a decisions.jsonl entry" doctrine. Syntax
+  documentation lines are excluded; the repo's own two self-waivers now
+  both carry reasons.
+
 ## [0.7.0] - 2026-08-11
 
 Tier 5: conversion architecture - the gap the learning database named

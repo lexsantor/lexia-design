@@ -8,6 +8,7 @@
  *   lexia-design-audit.mjs --hook                           PostToolUse hook (stdin JSON, advisory)
  *   lexia-design-audit.mjs --stop-check                     Stop hook (reminds about unresolved findings)
  *   lexia-design-audit.mjs --list-rules                     print the rule table
+ *   lexia-design-audit.mjs --waivers [dir]                  list inline waivers (audit them against decisions.jsonl)
  *
  * Exit codes (CLI modes): 0 = no critical/serious findings, 1 = critical/serious found, 2 = internal error.
  * Hook modes always exit 0 and never block.
@@ -211,7 +212,7 @@ const RULES = [
   {
     id: "content/todo-marker", severity: "serious", confidence: "certain", exts: ALL_EXTS, raw: true,
     kind: "line", dedupePerLine: true,
-    // lexia-disable-next-line content/todo-marker
+    // lexia-disable-next-line content/todo-marker -- the rule regex source self-matches
     re: /TODO:?\s*implement|FIXME\b|\[TODO\]|PLACEHOLDER_|\[(?:PENDING|PENDIENTE|TBD)[^\]\n]{0,40}\]/g,
     msg: "Unfinished placeholder marker",
     fix: "Ship complete implementations. Resolve or remove before delivery. Unresolved facts stay as bracketed named placeholders rendered in an alarming color - loud, never quietly plausible.",
@@ -1085,6 +1086,28 @@ async function stopCheckMode() {
   }
 }
 
+function listWaivers(rest) {
+  const root = resolve(rest[0] || ".");
+  const files = statSync(root).isDirectory() ? walk(root) : [root];
+  let count = 0;
+  for (const f of files) {
+    let raw;
+    try { raw = readFileSync(f, "utf8"); } catch { continue; }
+    const lines = raw.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      const m = lines[i].match(/lexia-disable-(file|next-line)\s+(.*)/);
+      if (!m) continue;
+      if (/<rule-id>|rule-id\[,|\.\.\.|\(\.\*\)/.test(m[2])) continue; // syntax docs and code, not waivers
+      count++;
+      const body = m[2];
+      const reason = body.includes("--") ? body.split("--").slice(1).join("--").trim() : "(no reason recorded)";
+      const ids = (body.split("--")[0].match(/[a-z0-9-]+\/[a-z0-9-]+/g) || []).join(", ");
+      console.log(`${relative(root, f) || f}:${i + 1}  [${m[1]}]  ${ids || "(no rule id)"}  — ${reason}`);
+    }
+  }
+  console.log(`\n${count} inline waiver(s). Each must have a decisions.jsonl entry; waivers without a reason fail review.`);
+}
+
 function listRules() {
   console.log("id | severity | confidence | applies to");
   for (const r of RULES) {
@@ -1099,6 +1122,7 @@ async function main() {
   if (args.includes("--hook")) return hookMode();
   if (args.includes("--stop-check")) return stopCheckMode();
   if (args.includes("--list-rules")) return listRules();
+  if (args.includes("--waivers")) return listWaivers(args.filter((a) => a !== "--waivers" && !a.startsWith("--")));
 
   const format = args.includes("--format") ? args[args.indexOf("--format") + 1] : "text";
   const deep = args.includes("--deep");

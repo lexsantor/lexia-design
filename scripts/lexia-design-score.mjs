@@ -5,6 +5,7 @@
  *
  * Subcommands:
  *   init  [--project-dir .]                       scaffold .lexia-design/ from plugin templates
+ *   doctor [--project-dir .]                      check install + project memory health
  *   gate  --scores <file.json> [options]          evaluate thresholds, append history, emit verdict,
  *                                                 compute the LEXIA SCORE /100 and write DESIGN-REPORT.md
  *   report [--project-dir .]                      print the last DESIGN-REPORT.md
@@ -436,15 +437,57 @@ function weightsCmd() {
   for (const b of BANDS) console.log(`  >= ${b.min} ${b.grade} (${b.label})`);
 }
 
+function doctor(args) {
+  const projectDir = resolve(arg(args, "--project-dir", "."));
+  let hard = 0;
+  const okLine = (m) => console.log(`  ok    ${m}`);
+  const warn = (m) => console.log(`  warn  ${m}`);
+  const fail = (m) => { hard++; console.log(`  FAIL  ${m}`); };
+
+  console.log("install:");
+  const major = parseInt(process.versions.node.split(".")[0], 10);
+  major >= 18 ? okLine(`node ${process.versions.node}`) : fail(`node ${process.versions.node} (< 18)`);
+  for (const t of ["DESIGN-BRIEF.md", "DESIGN-SYSTEM.md", "DESIGN-AUDIT.md", "DESIGN-REPORT.md", "project-preferences.json"]) {
+    existsSync(join(PLUGIN_ROOT, "templates", t)) ? okLine(`template ${t}`) : fail(`template ${t} missing (broken install)`);
+  }
+  existsSync(join(PLUGIN_ROOT, "scripts", "lexia-design-audit.mjs")) ? okLine("detector script present") : fail("detector script missing");
+  if (process.env.LEXIA_DESIGN_HOOKS === "0") warn("hooks disabled for this session (LEXIA_DESIGN_HOOKS=0)");
+
+  console.log("project:");
+  const dir = join(projectDir, ".lexia-design");
+  if (!existsSync(dir)) {
+    warn(".lexia-design/ not initialized here (run: lexia-design-score.mjs init)");
+  } else {
+    const prefs = join(dir, "project-preferences.json");
+    if (existsSync(prefs)) {
+      try { JSON.parse(readFileSync(prefs, "utf8")); okLine("project-preferences.json parses"); }
+      catch (e) { fail(`project-preferences.json invalid JSON: ${e.message}`); }
+    } else warn("project-preferences.json missing");
+    const hist = join(dir, "evaluation-history.jsonl");
+    if (existsSync(hist)) {
+      const lines = readFileSync(hist, "utf8").split("\n").filter(Boolean);
+      let badLines = 0;
+      for (const l of lines) { try { JSON.parse(l); } catch { badLines++; } }
+      badLines === 0 ? okLine(`evaluation-history.jsonl: ${lines.length} entr${lines.length === 1 ? "y" : "ies"}, all parse`)
+        : fail(`evaluation-history.jsonl: ${badLines} unparseable line(s)`);
+    } else warn("evaluation-history.jsonl missing");
+    existsSync(join(dir, "TRAJECTORY.md")) ? okLine("TRAJECTORY.md present")
+      : warn("TRAJECTORY.md missing (older init; re-run init to scaffold, nothing is overwritten)");
+  }
+  console.log(hard ? `\n${hard} hard problem(s).` : "\nhealthy.");
+  process.exit(hard ? 1 : 0);
+}
+
 const [cmd, ...rest] = process.argv.slice(2);
 try {
   if (cmd === "init") init(rest);
+  else if (cmd === "doctor") doctor(rest);
   else if (cmd === "gate") gate(rest);
   else if (cmd === "history") historyCmd(rest);
   else if (cmd === "report") reportCmd(rest);
   else if (cmd === "weights") weightsCmd();
   else {
-    console.error("Usage: lexia-design-score.mjs <init|gate|history|report|weights> [options]  (see file header)");
+    console.error("Usage: lexia-design-score.mjs <init|doctor|gate|history|report|weights> [options]  (see file header)");
     process.exit(3);
   }
 } catch (err) {

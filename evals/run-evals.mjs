@@ -18,10 +18,11 @@
  * Exit codes: 0 = all checks passed, 1 = failures, 2 = internal error.
  */
 
-import { readFileSync, readdirSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync, mkdirSync, writeFileSync, mkdtempSync } from "node:fs";
 import { execFileSync, spawnSync } from "node:child_process";
 import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { tmpdir } from "node:os";
 import process from "node:process";
 
 const EVALS_DIR = dirname(fileURLToPath(import.meta.url));
@@ -66,6 +67,46 @@ function detectorRuleIds() {
   ids.add("i18n/key-leaf-object-collision");
   ids.add("i18n/locale-coverage-gap");
   return ids;
+}
+
+
+const SCORE = join(PLUGIN_ROOT, "scripts", "lexia-design-score.mjs");
+const GATE_DIMS = [
+  "TASK_CLARITY", "INFORMATION_ARCHITECTURE", "USABILITY", "ACCESSIBILITY",
+  "CONTENT_INTEGRITY", "VISUAL_HIERARCHY", "TYPOGRAPHY", "COLOR_AND_CONTRAST",
+  "SPACING_AND_RHYTHM", "RESPONSIVENESS", "SYSTEM_COHERENCE", "DISTINCTIVENESS",
+  "MOTION_QUALITY", "PERFORMANCE", "PRODUCTION_READINESS",
+];
+
+function smokeGateMath() {
+  console.log("\n== Score gate arithmetic (black-box, subprocess) ==");
+  let n = 0;
+  const runGate = (mutate, extra) => {
+    // fresh project dir per case: history must not leak between cases
+    const tmp = mkdtempSync(join(tmpdir(), "lexia-gate-"));
+    const scores = Object.fromEntries(GATE_DIMS.map((d) => [d, 9]));
+    mutate(scores);
+    const sf = join(tmp, "scores.json");
+    writeFileSync(sf, JSON.stringify({ scores }));
+    const res = spawnSync(process.execPath,
+      [SCORE, "gate", "--scores", sf, "--project-dir", tmp, "--format", "json", ...extra],
+      { encoding: "utf8" });
+    try { const p = JSON.parse(res.stdout); return p.entry || p; } catch { return null; }
+  };
+  const check = (name, entry, score, grade) => {
+    n++;
+    if (!entry) { bad(`${name}: gate produced no parseable JSON`); return; }
+    if (entry.lexiaScore === score && entry.grade === grade) ok(`${name}: ${entry.lexiaScore} ${entry.grade}`);
+    else bad(`${name}: expected ${score} ${grade}, got ${entry.lexiaScore} ${entry.grade}`);
+  };
+  check("all 9s, no caps", runGate(() => {}, []), 90, "A");
+  check("motion n/a renormalizes, not penalizes", runGate((sc) => { sc.MOTION_QUALITY = null; }, []), 90, "A");
+  check("weighted mean (usability 6, rest 9)", runGate((sc) => { sc.USABILITY = 6; }, []), 87.1, "B");
+  check("fabrication caps at 49", runGate(() => {}, ["--fabrications", "1"]), 49, "F");
+  check("critical a11y caps at 59", runGate(() => {}, ["--critical-a11y", "1"]), 59, "F");
+  check("regression caps at 79", runGate(() => {}, ["--regressions", "1"]), 79, "C");
+  check("not-rendered caps at 89", runGate(() => {}, ["--not-rendered"]), 89, "B");
+  console.log(`  ${n} arithmetic cases`);
 }
 
 function smokeCases() {
@@ -188,6 +229,7 @@ function main() {
     smokeStructure();
     smokeCases();
     smokeFixtures();
+    smokeGateMath();
     console.log(`\n${failures === 0 ? "ALL SMOKE CHECKS PASSED" : `${failures} FAILURE(S)`}`);
     process.exit(failures === 0 ? 0 : 1);
   } catch (err) {
