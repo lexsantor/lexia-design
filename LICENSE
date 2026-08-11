@@ -19,10 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-This plugin is an original synthesis. It bundles no third-party source code,
-datasets, fonts, or components. Principles were studied from externally
-licensed sources and rewritten; see SOURCES.md for attribution, licenses and
-the exact versions consulted.
