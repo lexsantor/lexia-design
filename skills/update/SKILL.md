@@ -56,6 +56,11 @@ without recording versions.
 - Model-prior entries (references/anti-slop/model-priors.md) may be
   proposed for retirement when fresh audits stop finding them; that
   proposal follows this same flow.
+- Copy-tell decay (references/anti-slop/copy-rules.md): on every update
+  cycle, re-read recent project output against the registry. Propose
+  ADDING what now reads machine-made and DELETING entries that no longer
+  fire - a ban list that only grows becomes wrong. Entries carry the date
+  added; refresh the "confirmed" date on the ones kept.
 - If upstream deleted or relicensed a repo, propose removing the
   attribution row only after removing every principle that requires it,
   or keep the historical attribution with an "archived" marker.

@@ -15,6 +15,13 @@ Rule IDs in brackets map to `scripts/lexia-design-audit.mjs` where detection is
 deterministic. Patterns without an ID are judgment calls for the
 visual-critic agent.
 
+Two standing meta-rules govern the whole registry. First: avoiding a tell
+must not create a new tell - do not swing into all-staccato copy,
+one-line paragraphs everywhere, or designs that read as a list of avoided
+mistakes; write and design normally, then remove what reads machine-made.
+Second: entries are dated and expire. Tells drift with model generations;
+each update cycle re-confirms or deletes entries (see the update skill).
+
 ## Color and surface
 
 - Purple-blue gradient as default direction [slop/purple-gradient, flag].

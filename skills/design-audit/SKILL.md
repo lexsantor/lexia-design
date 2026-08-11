@@ -66,6 +66,13 @@ them the detector output.
    `${CLAUDE_PLUGIN_ROOT}/references/`): wcag-checklist.md gate items,
    forms-and-states.md seven states, anti-slop/registry.md two tests
    (interchangeability + reflex), responsive + content-length stress.
+   Copy sweep per anti-slop/copy-rules.md: read every visible string
+   aloud; flag reframes, bloated verbs, dead metaphors, chatter and
+   repetition - then apply the counter-check: the corrected copy must not
+   read as a list of avoided mistakes (all-staccato is the second tell).
+   If the surface will be demoed to investors or clients, run the
+   pre-demo purge gate: zero fabricated claims, every simulation
+   labeled, every [PENDING] resolved or consciously accepted.
    On app surfaces add production/launch-and-structure.md: trust surface
    (legal routes, favicon, metadata, robots), timezone-safe "today"
    logic, revalidation targets vs rendering routes, waterfall counts,

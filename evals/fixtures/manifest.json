@@ -40,7 +40,10 @@
     {
       "file": "clean-component.tsx",
       "expectRules": [],
-      "forbidSeverities": ["critical", "serious"]
+      "forbidSeverities": [
+        "critical",
+        "serious"
+      ]
     },
     {
       "file": "motion-heavy.css",
@@ -59,11 +62,15 @@
     },
     {
       "file": "today-logic.ts",
-      "expectRules": ["correctness/server-local-midnight"]
+      "expectRules": [
+        "correctness/server-local-midnight"
+      ]
     },
     {
       "file": "tokens-broken.css",
-      "expectRules": ["system/alpha-value-missing"]
+      "expectRules": [
+        "system/alpha-value-missing"
+      ]
     },
     {
       "file": "legal-page.tsx",
@@ -78,11 +85,15 @@
     },
     {
       "file": "LocaleSwitcher.tsx",
-      "expectRules": ["i18n/locale-switch-soft-nav"]
+      "expectRules": [
+        "i18n/locale-switch-soft-nav"
+      ]
     },
     {
       "file": "stat-counter.tsx",
-      "expectRules": ["motion/countup-zero-base"]
+      "expectRules": [
+        "motion/countup-zero-base"
+      ]
     },
     {
       "dir": "primitives-drift",
@@ -102,6 +113,27 @@
         "system/dark-variant-desync",
         "system/near-duplicate-tokens",
         "system/accent-ink-indistinct"
+      ]
+    },
+    {
+      "file": "copy-slop.tsx",
+      "expectRules": [
+        "slop/reframe-setup",
+        "slop/reframe-heading",
+        "content/bloated-verb",
+        "content/dead-metaphor",
+        "content/puffery",
+        "content/meta-chatter",
+        "content/engagement-bait",
+        "content/model-disclaimer-leak",
+        "content/adjective-triad",
+        "content/entity-alias",
+        "content/claim-repetition",
+        "content/stock-face-on-testimonial",
+        "content/unlabeled-simulation",
+        "slop/default-section-sequence",
+        "slop/uniform-reveal",
+        "content/todo-marker"
       ]
     }
   ]

@@ -212,9 +212,9 @@ const RULES = [
     id: "content/todo-marker", severity: "serious", confidence: "certain", exts: ALL_EXTS, raw: true,
     kind: "line", dedupePerLine: true,
     // lexia-disable-next-line content/todo-marker
-    re: /TODO:?\s*implement|FIXME\b|\[TODO\]|PLACEHOLDER_/g,
+    re: /TODO:?\s*implement|FIXME\b|\[TODO\]|PLACEHOLDER_|\[(?:PENDING|PENDIENTE|TBD)[^\]\n]{0,40}\]/g,
     msg: "Unfinished placeholder marker",
-    fix: "Ship complete implementations. Resolve or remove before delivery.",
+    fix: "Ship complete implementations. Resolve or remove before delivery. Unresolved facts stay as bracketed named placeholders rendered in an alarming color - loud, never quietly plausible.",
   },
   {
     id: "content/lorem-ipsum", severity: "moderate", confidence: "certain", exts: MARKUP,
@@ -367,6 +367,143 @@ const RULES = [
     re: /\b(?:it|this|that)(?:'s|s| is) not (?:just |only |merely |simply )?[^.!?;<>{}]{2,60}[.;,]\s*(?:it|this|that)(?:'s|s| is)\b|\bnot only\b[^.?!<>{}]{2,80}\bbut also\b|\b(?:less|fewer) \w+, more \w+\b|\bstop (?:thinking|doing|building) [^.<>{}]{2,40}\.\s*start\b/gi,
     msg: "Negative parallelism in interface copy",
     fix: "The most measured AI writing tell. Delete the rejected half and state the positive claim directly. Legitimate only when correcting a specific factual, legal or numeric error.",
+  },
+  // ---- Tier 3: syntactic copy tells (LD-SLOP-02..23). All MARKUP-scoped: ----
+  // ---- rendered copy only, never scripts. Repair is deletion (LD-SLOP-04). ----
+  {
+    id: "slop/reframe-setup", severity: "moderate", confidence: "review", exts: MARKUP,
+    kind: "line",
+    re: /(?:\bwhile\b[^.!?<>{}]{2,60}\bmay (?:seem|look|sound)\b|\bat first glance\b|\bmost people think\b|\bconventional wisdom\b)[^<>{}]{0,160}?\b(?:but\b|actually\b|in reality\b|the truth is\b|the real \w|the hidden \w)/gi,
+    msg: "Concession opener followed by a reframe pivot",
+    fix: "Negative parallelism in polite disguise. State the claim directly; delete the conceded frame.",
+  },
+  {
+    id: "slop/reframe-heading", severity: "moderate", confidence: "certain", exts: MARKUP,
+    kind: "line",
+    re: /<h[1-6][^>]*>\s*(?:the (?:real|hidden|actual|deeper) \w+|what (?:actually|really) \w+|beyond \w+|from \w+ to \w+|less \w+, more \w+|not an? \w+\. an? \w+)/gi,
+    msg: "Reveal-shaped heading",
+    fix: "Headings name their subject, not a reveal. Replace with the direct noun.",
+  },
+  {
+    id: "content/bloated-verb", severity: "minor", confidence: "review", exts: MARKUP,
+    kind: "line", dedupePerLine: true,
+    re: /\b(?:serves? as|stands? as|boasts? an?\b|is designed to|aims? to|seeks? to|plays? an? (?:\w+ )?role in|helps? to)\b/gi,
+    msg: "Inflated substitute for a plain verb",
+    fix: "Use is, has, uses, gives, shows. 'Serves as / is designed to / plays a role in' dodge the plain claim.",
+  },
+  {
+    id: "content/dead-metaphor", severity: "moderate", confidence: "review", exts: MARKUP,
+    kind: "line", dedupePerLine: true,
+    re: /\b(?:the (?:backbone|engine|dna|fabric) of|a bridge between|north star|single pane of glass|think of it as\b|it'?s like a\b)/gi,
+    msg: "Dead-metaphor scaffolding in copy",
+    fix: "Replace with the literal mechanism. A metaphor survives only if the subject is unfamiliar, it shortens the explanation, and it reads aloud normally.",
+  },
+  {
+    id: "content/puffery", severity: "moderate", confidence: "certain", exts: MARKUP,
+    kind: "line", dedupePerLine: true,
+    re: /\b(?:a pivotal moment|a major (?:shift|leap|milestone)|setting the stage for|(?:highlighting|underscoring) (?:its|the|their) (?:importance|significance|value)|paving the way for)\b/gi,
+    msg: "Puffery or participle fake depth",
+    fix: "State the fact. If the analysis matters, give it its own sentence with a specific claim.",
+  },
+  {
+    id: "content/meta-chatter", severity: "serious", confidence: "certain", exts: MARKUP,
+    kind: "line", dedupePerLine: true,
+    re: /\b(?:in this section,? (?:we|you)|this guide will cover|let me walk you through|let'?s dive in|great question|happy to help|i hope this helps)\b/gi,
+    msg: "Assistant chatter in interface copy",
+    fix: "Interface copy never narrates itself or performs helpfulness. These leak from chat transcripts into empty states and onboarding.",
+  },
+  {
+    id: "content/engagement-bait", severity: "moderate", confidence: "certain", exts: MARKUP,
+    kind: "line", dedupePerLine: true,
+    re: /\b(?:let that sink in|read that again|this changes everything|nobody is talking about|most people don'?t realize)\b/gi,
+    msg: "Engagement-bait cadence on a product surface",
+    fix: "Social-feed rhetoric costs credibility exactly where it is needed. Delete.",
+  },
+  {
+    id: "content/model-disclaimer-leak", severity: "serious", confidence: "certain", exts: MARKUP,
+    kind: "line", dedupePerLine: true,
+    re: /\b(?:as of my last (?:update|training)|based on available information|i don'?t have real-?time access|as an ai(?: language)? model)\b/gi,
+    msg: "Model disclaimer rendered as interface copy",
+    fix: "If data currency matters, show a real timestamp. Never render knowledge-cutoff phrasing in a UI.",
+  },
+  {
+    id: "content/adjective-triad", severity: "minor", confidence: "review", exts: MARKUP,
+    kind: "line",
+    re: /<h[1-6][^>]*>[^<]*\b(?:fast|simple|secure|easy|powerful|modern|beautiful|smart|flexible|reliable|scalable|intuitive|seamless|effortless|elegant|clean|lightweight|robust),\s*(?:fast|simple|secure|easy|powerful|modern|beautiful|smart|flexible|reliable|scalable|intuitive|seamless|effortless|elegant|clean|lightweight|robust),?\s*(?:and|&amp;|&)\s*(?:fast|simple|secure|easy|powerful|modern|beautiful|smart|flexible|reliable|scalable|intuitive|seamless|effortless|elegant|clean|lightweight|robust)\b/gi,
+    msg: "Generic adjective triad in a heading",
+    fix: "'Fast, simple and secure' is a shape, not a claim. Use one claim if one matters; two or four if that is what is true.",
+  },
+  {
+    id: "content/entity-alias", severity: "minor", confidence: "review", exts: MARKUP,
+    kind: "file",
+    test: (c) => new Set(c.toLowerCase().match(/\bthe (?:platform|tool|solution|product|system)\b/g) || []).size >= 3,
+    re: /\bthe (?:platform|tool|solution|product|system)\b/gi,
+    msg: "Three or more generic self-references in one file",
+    fix: "One name per entity. If the product is 'Atlas' it is 'Atlas' everywhere; renaming to avoid repetition destroys the reader's map.",
+  },
+  {
+    id: "content/claim-repetition", severity: "minor", confidence: "review", exts: MARKUP,
+    kind: "file",
+    test: (c) => {
+      const words = c.replace(/<[^>]+>/g, " ").toLowerCase().replace(/[^a-z' ]+/g, " ").split(/\s+/).filter((w) => w.length > 2);
+      const seen = new Map();
+      for (let i = 0; i + 3 < words.length; i++) {
+        const k = words.slice(i, i + 4).join(" ");
+        const n = (seen.get(k) || 0) + 1;
+        if (n >= 3) return true;
+        seen.set(k, n);
+      }
+      return false;
+    },
+    re: /./,
+    msg: "A four-word-plus phrase repeats three or more times",
+    fix: "Repetition reads as length, not emphasis. A section that only restates gets deleted, not reworded.",
+  },
+  {
+    id: "content/stock-face-on-testimonial", severity: "serious", confidence: "certain", exts: MARKUP,
+    kind: "file",
+    test: (c) => /(?:pravatar\.cc|randomuser\.me|thispersondoesnotexist|uifaces\.co|generated\.photos)/i.test(c) && /(?:testimonial|review|quote|rating)/i.test(c),
+    re: /(?:pravatar\.cc|randomuser\.me|thispersondoesnotexist|uifaces\.co|generated\.photos)/gi,
+    msg: "Generated/stock portrait inside testimonial content",
+    fix: "Never pair a quote with a synthetic face. Use initials or the aggregator's own profile image; source quotes from real reviews.",
+  },
+  {
+    id: "content/unlabeled-simulation", severity: "moderate", confidence: "review", exts: MARKUP,
+    kind: "file",
+    test: (c) => /<(?:Mock|Fake|Simulated|Dummy)[A-Z]\w*/.test(c) && !/simulaci[oó]n|simulation|demo (?:data|mode)|example data|sample data/i.test(c),
+    re: /<(?:Mock|Fake|Simulated|Dummy)[A-Z]\w*/g,
+    msg: "Mocked component rendered with no visible simulation label",
+    fix: "A simulated integration is never presented as live. Add a visible label: 'Simulation - real integration in production'.",
+  },
+  {
+    id: "slop/default-section-sequence", severity: "minor", confidence: "review", exts: MARKUP,
+    kind: "file",
+    test: (c) => {
+      const l = c.toLowerCase();
+      let pos = 0;
+      for (const s of ["hero", "feature", "testimonial", "pricing", "faq"]) {
+        const i = l.indexOf(s, pos);
+        if (i === -1) return false;
+        pos = i + s.length;
+      }
+      return true;
+    },
+    re: /hero/i,
+    msg: "Default landing sequence: hero, features, testimonials, pricing, FAQ",
+    fix: "The template order is a tell. Ask whether THIS product needs these sections, in this order, before composing them.",
+  },
+  {
+    id: "slop/uniform-reveal", severity: "minor", confidence: "review", exts: MARKUP,
+    kind: "file",
+    test: (c) => {
+      const m = c.match(/animate-fade-?(?:in-?)?up|fade-?in-?up|data-aos=["']fade-up["']/gi) || [];
+      const counts = {};
+      for (const x of m) counts[x.toLowerCase()] = (counts[x.toLowerCase()] || 0) + 1;
+      return Object.values(counts).some((n) => n >= 5);
+    },
+    re: /animate-fade-?(?:in-?)?up|fade-?in-?up|data-aos=["']fade-up["']/gi,
+    msg: "The same reveal on five or more sections",
+    fix: "One reveal variant everywhere means no motion decision was made. Vary by content, or remove the reveal.",
   },
   {
     id: "system/raw-black-white", severity: "moderate", confidence: "review", exts: MARKUP,

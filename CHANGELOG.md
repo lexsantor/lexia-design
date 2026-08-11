@@ -4,6 +4,69 @@ All notable changes to lexia-design. Format: Keep a Changelog; versioning:
 semver. Rule changes should cite the observed failure or source update that
 motivated them (changelog-driven hardening).
 
+## [0.5.0] - 2026-08-11
+
+Tier 3 of the learning-database integration: the syntactic copy layer.
+The registry caught vocabulary; this release catches the SHAPES generated
+copy takes regardless of which words fill them (LD-SLOP-02..24), guarded
+by the two meta-rules imported first: avoiding a tell must not create a
+new tell (LD-SLOP-17), and registry entries are dated and expire on the
+update cadence (LD-SLOP-18).
+
+### Added
+
+- 15 fixture-proven detector rules (62 file + 10 project = 72 total):
+  - `slop/reframe-setup` - concession opener + pivot ("At first glance...
+    but in reality") (LD-SLOP-02)
+  - `slop/reframe-heading` - reveal-shaped headings ("The real problem
+    with...") (LD-SLOP-03)
+  - `content/bloated-verb` - "serves as / is designed to / plays a role
+    in" (LD-SLOP-05)
+  - `content/dead-metaphor` - "the backbone of / north star / single
+    pane of glass" (LD-SLOP-06)
+  - `content/puffery` - "a pivotal moment / paving the way for"
+    (LD-SLOP-07)
+  - `content/meta-chatter` - assistant chatter in UI strings ("Let me
+    walk you through") (LD-SLOP-08)
+  - `content/engagement-bait` - "Let that sink in / This changes
+    everything" (LD-SLOP-09)
+  - `content/model-disclaimer-leak` - "As of my last update" rendered as
+    interface copy (LD-SLOP-10)
+  - `content/adjective-triad` - generic adjective triads in headings
+    (LD-SLOP-11)
+  - `content/entity-alias` - three+ generic self-references ("the
+    platform / the tool / the solution") in one file (LD-SLOP-13)
+  - `content/claim-repetition` - a 4-word phrase repeated 3+ times in
+    one page (LD-SLOP-15)
+  - `content/stock-face-on-testimonial` - generated/stock portrait hosts
+    inside testimonial content (LD-SLOP-23)
+  - `content/unlabeled-simulation` - Mock/Fake/Simulated components
+    rendered with no visible label (LD-SLOP-21)
+  - `slop/default-section-sequence` - hero/features/testimonials/
+    pricing/FAQ in template order (LD-SLOP-20)
+  - `slop/uniform-reveal` - the same fade-up on 5+ sections (LD-SLOP-19)
+- `content/todo-marker` extended with `[PENDING|PENDIENTE|TBD ...]`
+  bracketed placeholders; doctrine requires them rendered loud, in an
+  alarming color, never quietly plausible (LD-SLOP-22)
+- `evals/fixtures/copy-slop.tsx`: 16-rule fixture proving the layer
+- copy-rules.md: four new doctrine sections - phrase families, shape
+  habits, naming and specificity, simulation and testimonial integrity
+  (LD-SLOP-04/05/11/12/13/14/15/16/21/22/23/24), each dated
+- design-audit skill: copy sweep with the anti-overfitting counter-check,
+  and the pre-demo purge gate (zero fabricated claims before any
+  investor/client demo)
+- update skill: copy-tell decay - each cycle proposes additions AND
+  deletions; entries carry added/confirmed dates
+- registry.md preamble: the two standing meta-rules
+
+### Not automated, by decision
+
+- False ranges (LD-SLOP-12) and countable-claims (LD-SLOP-16) stay
+  reviewer judgment: idiomatic "from X to Y" density makes a regex
+  FP-heavy, and falsifiability needs context no regex has.
+- Metronome rhythm (LD-SLOP-14) is doctrine; sibling-length variance
+  needs DOM grouping the detector deliberately does not do.
+
 ## [0.4.0] - 2026-08-11
 
 Tier 2 of the learning database: the coherence layer. Motivation

@@ -8,7 +8,7 @@
 <br/>
 
 [![CI](https://github.com/lexsantor/lexia-design/actions/workflows/ci.yml/badge.svg)](https://github.com/lexsantor/lexia-design/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-0.4.0-1f6feb)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.5.0-1f6feb)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-3fb950)](LICENSE)
 [![Node](https://img.shields.io/badge/node-%E2%89%A518-5a6472)](#install)
 [![Deps](https://img.shields.io/badge/runtime%20deps-0-5a6472)](scripts)
@@ -227,7 +227,7 @@ flowchart LR
 
     subgraph E [Audit: two isolated tracks]
         direction TB
-        E1[Detector: 57 deterministic rules]
+        E1[Detector: 72 deterministic rules]
         E2[Reviewers: fresh context, disjoint lenses]
     end
 ```
@@ -267,7 +267,7 @@ the user's budget without converging.
 </table>
 
 <details>
-<summary><b>Detector</b> — 57 rules, zero dependencies, never rewrites code</summary>
+<summary><b>Detector</b> — 72 rules, zero dependencies, never rewrites code</summary>
 
 <br/>
 
@@ -281,8 +281,8 @@ node scripts/lexia-design-audit.mjs --list-rules
 |---|---|
 | `a11y/*` | zoom disabled, paste blocked, clickable divs, focus outline removed with no replacement, tablist without panels, reveal wrapper over legal content |
 | `motion/*` | `transition: all`, layout-property transitions, `scale(0)` entrances, blur in entrances, press without transform, missing reduced-motion guard, LCP behind a reveal, counters resting at zero |
-| `slop/*` | purple-blue gradient, emoji as icons, eyebrow density, card density, negative parallelism |
-| `content/*` | fabricated metrics, star-rated testimonials, buzzword copy, lorem ipsum, placeholder markers |
+| `slop/*` | purple-blue gradient, emoji as icons, eyebrow density, card density, negative parallelism, reframe setups and headings, template section order, uniform reveals |
+| `content/*` | fabricated metrics, star-rated testimonials, buzzword copy, lorem ipsum, loud [PENDING] placeholders, assistant chatter, model-disclaimer leaks, engagement bait, puffery, dead metaphors, entity aliasing, claim repetition, stock faces on testimonials, unlabeled simulations |
 | `system/*` | off-token colors, hardcoded shadows, near-duplicate tokens, an accent that is functionally ink, theme-toggle desync, color tokens missing the alpha placeholder |
 | `i18n/*` | provider without an explicit locale, locale switcher on soft navigation, hardcoded locale segments |
 | `correctness/*` `ux/*` `layout/*` `perf/*` | server-local midnight in "today" logic, native `confirm()`, `order` with asymmetric grid tracks, broad `will-change` |
