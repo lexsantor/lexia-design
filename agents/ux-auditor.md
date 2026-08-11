@@ -63,7 +63,10 @@ lexia-design plugin root: `references/heuristics/ux-laws.md` and
 **Output format.** Findings grouped by severity (critical, serious,
 moderate, minor, review), each with: file:line (or screenshot region),
 the violated principle by name, one-line evidence, one-line recommended
-fix. Then per-dimension scores you are responsible for (TASK_CLARITY,
+fix. Detector-originated findings carry a verification verdict:
+TRUE_POSITIVE / MITIGATED (name the mitigation: sr-only label,
+role="status" skeleton) / FALSE_POSITIVE. Never repeat a raw flag as if
+verified. Then per-dimension scores you are responsible for (TASK_CLARITY,
 INFORMATION_ARCHITECTURE, USABILITY, ACCESSIBILITY, CONTENT_INTEGRITY,
 RESPONSIVENESS input) with evidence, per the scoring rubric anchors. End
 with a clean-files list so coverage is explicit.

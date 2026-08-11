@@ -79,7 +79,9 @@ Format per entry: what it predicts -> apply when -> tension -> how to verify.
   to something on purpose); common region beats borders.
 - Affordances and signifiers. Interactive things look interactive; nothing
   non-interactive imitates a control. If part of a card looks clickable, the
-  whole card is clickable (no dead zones).
+  whole card is clickable (no dead zones). Row hover that promises a click
+  the row does not honor (only one cell links) is an affordance lie: make
+  the row navigate or drop the hover.
 
 ## Inclusive by default
 

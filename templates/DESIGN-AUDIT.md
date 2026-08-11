@@ -3,6 +3,8 @@
 Date:
 Iteration:
 Scope:
+Coverage: <!-- lenses + surfaces examined; totals are only comparable across equal coverage -->
+Reviewers: <!-- fresh (first audit) or continued from iteration N (re-audit) -->
 Render evidence: <!-- screenshot paths per breakpoint/theme, or "NOT RENDERED — visual dims excluded" -->
 
 ## Scores (0-10; n/a excluded and renormalized)
@@ -29,8 +31,12 @@ TOTAL:            Gate verdict (lexia-design-score gate):
 
 ## Findings
 
+<!-- Detector findings carry a verification verdict:
+     TRUE_POSITIVE | MITIGATED (how) | FALSE_POSITIVE | WAIVED (decisions ref).
+     Only TRUE_POSITIVE findings drive fixes and scores. -->
+
 ### Critical
-<!-- id/rule or heuristic | file:line | evidence | fix -->
+<!-- id/rule or heuristic | verdict | file:line | evidence | fix -->
 
 ### Serious
 

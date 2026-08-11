@@ -16,6 +16,14 @@ history. Honesty rules first.
   and exclude from the total (the gate renormalizes; see below).
 - A dimension that does not apply (MOTION_QUALITY on a zero-motion
   surface) is scored n/a, not 10; the gate renormalizes the total.
+- Record COVERAGE with every score set (the "coverage" field: which
+  lenses and surfaces this audit examined). A deeper audit scoring lower
+  than a shallower one is not a regression; new lenses surface defect
+  classes earlier cycles never examined. Without coverage, totals are
+  not comparable across cycles.
+- Detector findings enter scores only after verification (TRUE_POSITIVE
+  / MITIGATED / FALSE_POSITIVE); mitigated and false-positive flags do
+  not lower a score.
 
 ## Anchor scale (applies to every dimension)
 
@@ -57,7 +65,10 @@ scoring failure, not a design success.
     external components registered and retokenized.
 12. DISTINCTIVENESS: interchangeability test (cover the logo); signature
     move present and visible; anti-references avoided; direction
-    recognizable from a single screenshot. Subjective: justify.
+    recognizable from a single screenshot. On hybrid/product surfaces,
+    score the PAID surface too: a branded landing over a generic console
+    caps this dimension (the signature must reach where users spend
+    their day). Subjective: justify.
 13. MOTION_QUALITY: frequency gate respected; durations/easings within
     bands; interruptible; reduced-motion complete; one authored moment
     rather than ubiquitous entrances; cleanup verified.

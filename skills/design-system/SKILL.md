@@ -35,6 +35,19 @@ first: `${CLAUDE_PLUGIN_ROOT}/references/visual-directions/direction-protocol.md
    composed separately (dark is not inverted light). Record measured
    contrast for every text/surface pair
    (`${CLAUDE_PLUGIN_ROOT}/references/accessibility/wcag-checklist.md`).
+   Token quality is measured, not eyeballed: same-role tokens need real
+   deltas (two grays a few RGB points apart render as one level:
+   [system/near-duplicate-tokens]); record contrast(accent, ink) as a
+   ratio: under ~2:1 the accent is functionally ink and every accent
+   moment disappears [system/accent-ink-indistinct]. Shadows are themed
+   tokens tinted toward the canvas hue, never hardcoded black rgba()
+   [system/hardcoded-shadow-color].
+   Theming mechanics: if the app toggles theme via [data-theme] or a
+   class, re-key the framework's dark variant to that mechanism
+   (Tailwind 4: `@custom-variant dark
+   (&:where([data-theme="dark"], [data-theme="dark"] *));`), or every
+   dark: utility renders wrong whenever app theme != OS theme
+   [system/dark-variant-desync].
 4. Spacing and rhythm. Base unit (4 or 8), scale, section rhythm,
    container widths, VISUAL_DENSITY dial applied here; more space above
    headings than below.
@@ -44,7 +57,11 @@ first: `${CLAUDE_PLUGIN_ROOT}/references/visual-directions/direction-protocol.md
 6. Interaction language. Focus ring spec, hover/active/selected/disabled
    treatments, motion tokens (durations + easings from
    `${CLAUDE_PLUGIN_ROOT}/references/motion/principles.md`) even if
-   MOTION_INTENSITY is low: instant is also a spec.
+   MOTION_INTENSITY is low: instant is also a spec. Kill the de-facto
+   second motion system: set the framework's DEFAULT transition
+   duration/easing to your tokens (Tailwind 4:
+   --default-transition-duration, --default-transition-timing-function)
+   so bare transition utilities inherit the system.
 7. Density and breakpoints. Breakpoint set, density shifts per
    breakpoint, touch-target floors per pointer type.
 

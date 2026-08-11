@@ -1,5 +1,5 @@
 {
-  "description": "Detector self-test: each fixture maps to rules that MUST fire (subset assertion) or severities that MUST NOT appear.",
+  "description": "Detector self-test: each fixture maps to rules that MUST fire (subset assertion) or severities that MUST NOT appear. Entries with 'dir' run in --deep mode to exercise project-level rules.",
   "fixtures": [
     {
       "file": "slop-landing.html",
@@ -13,11 +13,13 @@
         "a11y/icon-button-no-name",
         "a11y/placeholder-as-label",
         "a11y/autofocus",
+        "a11y/tablist-without-panels",
         "motion/transition-all",
         "motion/layout-prop-transition",
         "motion/scale-zero-entrance",
         "motion/no-reduced-motion-guard",
         "motion/long-duration",
+        "motion/press-without-transform",
         "slop/purple-gradient",
         "slop/emoji-icon",
         "slop/unicode-pseudo-icon",
@@ -31,7 +33,8 @@
         "content/fake-status-dot",
         "system/hardcoded-hex-density",
         "system/h-screen-vs-dvh",
-        "perf/will-change-broad"
+        "perf/will-change-broad",
+        "ux/native-confirm"
       ]
     },
     {
@@ -47,9 +50,23 @@
         "motion/scale-zero-entrance",
         "motion/no-reduced-motion-guard",
         "motion/long-duration",
+        "motion/filter-transition",
+        "system/hardcoded-shadow-color",
         "system/hardcoded-hex-density",
         "system/h-screen-vs-dvh",
         "perf/will-change-broad"
+      ]
+    },
+    {
+      "file": "today-logic.ts",
+      "expectRules": ["correctness/server-local-midnight"]
+    },
+    {
+      "dir": "theme-desync",
+      "expectRules": [
+        "system/dark-variant-desync",
+        "system/near-duplicate-tokens",
+        "system/accent-ink-indistinct"
       ]
     }
   ]

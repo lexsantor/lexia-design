@@ -20,9 +20,15 @@ easing, origin, interruption, GPU load, timing asymmetry; polish last.
 
 ## Duration bands
 
-- Press feedback: 100-160ms. Tooltips: 125-200ms (first delayed; siblings
-  instant). Dropdowns/selects: 150-250ms. Modals/drawers: 200-400ms
-  (up to 500ms with strong spatial choreography).
+- Press feedback: 100-160ms. Hover color/background: 150-250ms (a 500ms
+  hover color reads as lag even under a front-loaded curve). Tooltips:
+  125-200ms (first delayed; siblings instant). Dropdowns/selects:
+  150-250ms. Modals/drawers: 200-400ms (up to 500ms with strong spatial
+  choreography).
+- Split durations per property when tiers differ: transform/shadow lifts
+  may keep a slower tier while color stays fast; or give buttons the
+  fast tier entirely (press override ~150ms stays). One element, one
+  perceived speed.
 - UI ceiling ~300ms as default; exceeding it needs a reason tied to
   consequence or distance. Brand/narrative surfaces may run 500-900ms.
 - Exits at ~0.7-0.8x of entrances: leaving UI should get out of the way.
@@ -71,7 +77,19 @@ easing, origin, interruption, GPU load, timing asymmetry; polish last.
 
 - Animate transform and opacity only; width/height/top/left/margin animate
   layout [motion/layout-prop-transition]. Never transition: all
-  [motion/transition-all].
+  [motion/transition-all]. Never transition filter (blur) in entrances:
+  it is a paint tax on every section [motion/filter-transition]; reveals
+  are transform+opacity only.
+- One motion system, ENFORCED: declared tokens silently coexist with a
+  de-facto second system of bare transition utilities running framework
+  defaults. Tailwind 4: set --default-transition-duration and
+  --default-transition-timing-function in @theme so only deliberate
+  values remain in markup. Press states must include transform in their
+  transition list or the press snaps [motion/press-without-transform].
+- The richest interactive surface is usually motion-dead: teams polish
+  landing motion and ship the core data widget with zero transitions.
+  Inventory interaction motion (view swaps, selection states) on the
+  highest-value component explicitly.
 - will-change: sparingly, applied just before animating, removed after.
 - No continuous animation work offscreen: pause loops with
   IntersectionObserver; nonessential loops stop when not visible.
@@ -90,7 +108,9 @@ fades; remove positional movement, parallax, scale choreography, autoplay.
 
 CSS: wrap movement in @media (prefers-reduced-motion: no-preference), or
 override under (prefers-reduced-motion: reduce) [motion/no-reduced-motion-
-guard]. JS: gate with matchMedia("(prefers-reduced-motion: reduce)") and
+guard]. Reduced-motion blocks that zero durations must also cap
+animation-iteration-count: a 0.01ms infinite loop still ticks every
+frame. JS: gate with matchMedia("(prefers-reduced-motion: reduce)") and
 listen for changes. WCAG technique C39. Content must be visible and
 functional with JavaScript disabled or failed: never opacity:0 at rest
 waiting for a script.

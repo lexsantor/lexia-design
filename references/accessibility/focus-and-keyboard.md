@@ -13,6 +13,13 @@
   region announcement; Back/Forward restores scroll position.
 - Dynamic insertion: if content appears in response to an action and the
   user must act on it, move focus to it; otherwise announce via aria-live.
+- Multi-step flows that navigate per step reset focus to <body>: give the
+  new step's heading tabIndex={-1} and focus it on mount. No visible ring
+  needed (not keyboard-reachable), and do NOT add outline-none for it.
+- Selection cards built on sr-only radios/checkboxes hide keyboard focus:
+  the wrapping label needs has-[:focus-visible]: styles (or
+  peer-focus-visible when sibling-structured). Check every styled
+  selection-card group.
 - scroll-margin-top on anchor targets so sticky headers don't cover them.
 - Focus order follows visual order; DOM order is the source of truth; avoid
   order-scrambling CSS on interactive sequences.
@@ -45,6 +52,9 @@ Rules of engagement:
 - If custom, implement the APG pattern completely: role, states, properties
   AND keyboard behavior. A role without its keyboard contract is worse than
   no role ("no ARIA is better than bad ARIA").
+- View toggles are not tabs: role="tablist" without tabpanels and
+  arrow-key behavior is a broken contract [a11y/tablist-without-panels].
+  A front/back or filter toggle is buttons with aria-pressed.
 - Component libraries: verify their primitives against the APG pattern
   before trusting marketing claims; test with keyboard and a screen reader
   smoke pass (VoiceOver/NVDA) on the composed page, not the isolated demo.

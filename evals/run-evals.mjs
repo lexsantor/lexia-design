@@ -55,6 +55,9 @@ function detectorRuleIds() {
   }
   ids.add("project/no-reduced-motion-anywhere");
   ids.add("system/off-token-colors");
+  ids.add("system/dark-variant-desync");
+  ids.add("system/near-duplicate-tokens");
+  ids.add("system/accent-ink-indistinct");
   return ids;
 }
 
@@ -92,20 +95,22 @@ function smokeFixtures() {
   console.log("\n== Detector self-test (fixtures) ==");
   const manifest = JSON.parse(readFileSync(join(EVALS_DIR, "fixtures", "manifest.json"), "utf8"));
   for (const fx of manifest.fixtures) {
-    const file = join(EVALS_DIR, "fixtures", fx.file);
-    if (!existsSync(file)) { bad(`${fx.file}: fixture missing`); continue; }
-    const res = spawnSync(process.execPath, [AUDIT, file, "--format", "json"], { encoding: "utf8" });
-    if (res.error || !res.stdout) { bad(`${fx.file}: detector did not run (${res.error?.message || "no output"})`); continue; }
+    const name = fx.file || fx.dir;
+    const target = join(EVALS_DIR, "fixtures", name);
+    if (!existsSync(target)) { bad(`${name}: fixture missing`); continue; }
+    const argsList = fx.dir ? [AUDIT, "--deep", target, "--format", "json"] : [AUDIT, target, "--format", "json"];
+    const res = spawnSync(process.execPath, argsList, { encoding: "utf8" });
+    if (res.error || !res.stdout) { bad(`${name}: detector did not run (${res.error?.message || "no output"})`); continue; }
     let report;
-    try { report = JSON.parse(res.stdout); } catch { bad(`${fx.file}: detector emitted invalid JSON`); continue; }
+    try { report = JSON.parse(res.stdout); } catch { bad(`${name}: detector emitted invalid JSON`); continue; }
     const found = new Set(report.findings.map((f) => f.id));
     const missing = (fx.expectRules || []).filter((r) => !found.has(r));
-    if (missing.length) bad(`${fx.file}: expected rules did not fire: ${missing.join(", ")}`);
-    else if (fx.expectRules?.length) ok(`${fx.file}: all ${fx.expectRules.length} expected rules fired`);
+    if (missing.length) bad(`${name}: expected rules did not fire: ${missing.join(", ")}`);
+    else if (fx.expectRules?.length) ok(`${name}: all ${fx.expectRules.length} expected rules fired`);
     if (fx.forbidSeverities?.length) {
       const hits = report.findings.filter((f) => fx.forbidSeverities.includes(f.severity));
-      if (hits.length) bad(`${fx.file}: forbidden severities present: ${hits.map((h) => `${h.id}@${h.line}`).join(", ")}`);
-      else ok(`${fx.file}: no ${fx.forbidSeverities.join("/")} findings (clean fixture)`);
+      if (hits.length) bad(`${name}: forbidden severities present: ${hits.map((h) => `${h.id}@${h.line}`).join(", ")}`);
+      else ok(`${name}: no ${fx.forbidSeverities.join("/")} findings (clean fixture)`);
     }
   }
 }

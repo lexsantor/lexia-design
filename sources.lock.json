@@ -124,6 +124,14 @@
       "role": "Component interaction patterns and keyboard semantics"
     },
     {
+      "id": "field-learnings-nutrionyx",
+      "type": "internal",
+      "path": "docs/learnings/2026-08-nutrionyx.md",
+      "license": "first-party",
+      "checked": "2026-08-11",
+      "role": "37 cross-project learnings from a production audit-and-fix cycle; integrated in 0.2.0"
+    },
+    {
       "id": "claude-code-plugin-spec",
       "type": "docs",
       "url": "https://code.claude.com/docs/en/plugins-reference",

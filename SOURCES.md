@@ -231,6 +231,19 @@ Where sources contradict each other, the resolution is recorded in
 
 ---
 
+## 11. Internal field learnings (first-party)
+
+- Path: docs/learnings/2026-08-nutrionyx.md
+- Origin: full four-tier audit-and-fix cycle run WITH this plugin on a
+  production clinical multi-tenant SaaS (2026-08), harvested as 37
+  project-agnostic learnings. First-party material; no external license.
+- Extracted: verification-verdict protocol, inline waivers, reviewer
+  continuity, coverage-aware scoring, tiered fixing, 9 detector rules,
+  trust-surface launch gate, theming/token-quality checks, motion-system
+  enforcement, timezone-correct "today" logic, structure patterns,
+  recurring a11y patterns, surface parity, asset-pipeline rules.
+  Integrated in v0.2.0; see CHANGELOG for the per-learning mapping.
+
 ## Cross-source conflicts and resolutions
 
 1. Exit easing: Emil (ease-out for exits) vs Material-derived convention

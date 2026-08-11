@@ -14,8 +14,14 @@
  *
  * The detector finds mechanical violations. `confidence: "review"` findings are
  * heuristic and require human/agent judgment — they are signals, not verdicts.
- * It never rewrites code.
+ * Every reported finding must be verified against its context before acting
+ * (TRUE_POSITIVE / MITIGATED / FALSE_POSITIVE). It never rewrites code.
+ *
+ * Inline waivers: `lexia-disable-file <rule-id>` and
+ * `lexia-disable-next-line <rule-id>` inside comments, paired with a
+ * decisions.jsonl entry.
  */
+// lexia-disable-file ux/native-confirm -- rule-definition strings self-match; this file calls no dialogs
 
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync } from "node:fs";
 import { join, extname, resolve, relative } from "node:path";
@@ -204,7 +210,9 @@ const RULES = [
   },
   {
     id: "content/todo-marker", severity: "serious", confidence: "certain", exts: ALL_EXTS, raw: true,
-    kind: "line", re: /TODO:?\s*implement|FIXME\b|\[TODO\]|PLACEHOLDER_/g,
+    kind: "line", dedupePerLine: true,
+    // lexia-disable-next-line content/todo-marker
+    re: /TODO:?\s*implement|FIXME\b|\[TODO\]|PLACEHOLDER_/g,
     msg: "Unfinished placeholder marker",
     fix: "Ship complete implementations. Resolve or remove before delivery.",
   },
@@ -237,12 +245,83 @@ const RULES = [
     id: "content/fake-status-dot", severity: "minor", confidence: "review", exts: MARKUP,
     kind: "line",
     re: /class(?:Name)?\s*=\s*["'][^"']*animate-(?:ping|pulse)[^"']*rounded-full[^"']*["']|class(?:Name)?\s*=\s*["'][^"']*rounded-full[^"']*animate-(?:ping|pulse)[^"']*["']/g,
+    excludeLine: /role=["']status["']|aria-busy|aria-live/,
     msg: "Pulsing dot — decorative status indicator?",
-    fix: "Status indicators must report real state. Decorative liveliness is fabricated telemetry.",
+    fix: "Status indicators must report real state. Decorative liveliness is fabricated telemetry. (Skeletons with role=\"status\" are fine.)",
+  },
+  {
+    id: "motion/press-without-transform", severity: "moderate", confidence: "certain", exts: MARKUP,
+    kind: "line",
+    re: /class(?:Name)?\s*=\s*["']([^"']*active:scale-[^"']*)["']/g,
+    valueTest: (m) => {
+      const c = m[1];
+      const limited = /transition-(?:colors|opacity|shadow)\b/.test(c);
+      const covers = /transition-all\b|transition-transform\b|(?:^|\s)transition(?:\s|"|$)/.test(c + " ");
+      return limited && !covers;
+    },
+    msg: "active:scale with a transition list that excludes transform",
+    fix: "The press snaps with zero easing. Add transition-transform (or use the house Button), keep press ~150ms.",
+  },
+  {
+    id: "motion/filter-transition", severity: "moderate", confidence: "certain", exts: STYLES,
+    kind: "line",
+    re: /transition\s*:[^;{}]*\bfilter\b|transition-property\s*:[^;{}]*\bfilter\b/g,
+    msg: "Transitioning filter (blur/etc.)",
+    fix: "filter animates on the paint path: a tax on every reveal. Entrances use transform+opacity only.",
+  },
+  {
+    id: "system/hardcoded-shadow-color", severity: "minor", confidence: "review", exts: STYLES,
+    kind: "line",
+    re: /box-shadow[^;{}]*(?:rgba?\(\s*0\s*,\s*0\s*,\s*0|#000\b|\bblack\b)/g,
+    msg: "Shadow with hardcoded black",
+    fix: "Every hardcoded rgba() shadow is a dark-mode bug. Use a themed shadow token tinted toward the canvas hue.",
+  },
+  {
+    id: "correctness/server-local-midnight", severity: "serious", confidence: "review", exts: SCRIPTY,
+    kind: "line",
+    re: /\.toDateString\s*\(\s*\)|setHours\s*\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\)/g,
+    msg: "Server-local day boundary in date logic",
+    fix: "\"Today\" computed server-side drifts for users in other timezones. Route all today/streak logic through one timezone helper module.",
+  },
+  {
+    id: "a11y/tablist-without-panels", severity: "moderate", confidence: "review", exts: MARKUP,
+    kind: "file",
+    test: (c) => /role=["']tablist["']/.test(c) && !/tabpanel/.test(c),
+    re: /role=["']tablist["']/,
+    msg: "role=\"tablist\" with no tabpanels in this file",
+    fix: "A view/filter toggle is not tabs: use buttons with aria-pressed. Real tabs need panels + arrow-key behavior (APG).",
+  },
+  {
+    id: "ux/native-confirm", severity: "minor", confidence: "review", exts: SCRIPTY,
+    kind: "line", dedupePerLine: true,
+    re: /\b(?:window\.)?confirm\s*\(/g,
+    msg: "Native confirm() dialog",
+    fix: "confirm() is legitimate only for unsaved-changes navigation guards. Destructive actions use in-flow two-step confirm (arm -> confirm/cancel) or type-to-confirm.",
   },
 ];
 
 /* -------------------------------- helpers --------------------------------- */
+
+function parseDisables(raw) {
+  // Inline waivers (learning: waivers must be durable and live next to code):
+  //   lexia-disable-file rule-id[, rule-id]       waive for the whole file
+  //   lexia-disable-next-line rule-id[, rule-id]  waive for the following line
+  // Pair every directive with a reason in prose and a decisions.jsonl entry.
+  const file = new Set();
+  const lines = new Map(); // lineNumber -> Set(ruleIds)
+  const src = raw.split("\n");
+  for (let i = 0; i < src.length; i++) {
+    let m = src[i].match(/lexia-disable-file\s+([\w/,\s-]+)/);
+    if (m) for (const id of m[1].split(",").map((s) => s.trim()).filter(Boolean)) file.add(id);
+    m = src[i].match(/lexia-disable-next-line\s+([\w/,\s-]+)/);
+    if (m) {
+      const set = lines.get(i + 2) || new Set();
+      for (const id of m[1].split(",").map((s) => s.trim()).filter(Boolean)) set.add(id);
+      lines.set(i + 2, set);
+    }
+  }
+  return { file, lines };
+}
 
 function blankComments(src) {
   // Replace block/html comment CONTENT with spaces, preserving newlines and length.
@@ -276,6 +355,7 @@ function auditFile(filePath) {
   }
   if (raw.includes("\u0000")) return findings; // binary
   const blanked = blankComments(raw);
+  const disables = parseDisables(raw);
 
   for (const rule of RULES) {
     if (!rule.exts.has(ext)) continue;
@@ -325,7 +405,9 @@ function auditFile(filePath) {
       if (linesSeen.size > 25) break; // cap noise per rule per file
     }
   }
-  return findings;
+  return findings.filter(
+    (f) => !disables.file.has(f.id) && !(disables.lines.get(f.line)?.has(f.id))
+  );
 }
 
 function mk(rule, file, line, evidence) {
@@ -347,7 +429,45 @@ function walk(dir, acc = []) {
   return acc;
 }
 
-function projectRules(files, contentsById) {
+/* ------------------------- color math (WCAG) ------------------------- */
+
+function hexToRgb(hex) {
+  let h = hex.replace("#", "");
+  if (h.length === 3) h = h.split("").map((c) => c + c).join("");
+  const n = parseInt(h, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function relLuminance([r, g, b]) {
+  const f = (v) => {
+    const s = v / 255;
+    return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  };
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+}
+
+function contrastRatio(hexA, hexB) {
+  const la = relLuminance(hexToRgb(hexA));
+  const lb = relLuminance(hexToRgb(hexB));
+  const [hi, lo] = la >= lb ? [la, lb] : [lb, la];
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+function rgbDistance(hexA, hexB) {
+  const a = hexToRgb(hexA), b = hexToRgb(hexB);
+  return Math.sqrt((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2);
+}
+
+function readDesignSystem(root) {
+  for (const rel of [".lexia-design/DESIGN-SYSTEM.md", "DESIGN-SYSTEM.md"]) {
+    const p = join(root, rel);
+    if (!existsSync(p)) continue;
+    try { return { path: p, text: readFileSync(p, "utf8") }; } catch { return null; }
+  }
+  return null;
+}
+
+function projectRules(files, contentsById, root) {
   const findings = [];
   const anims = files.filter((f) => /(@keyframes|animation\s*:|gsap\.|<motion\.)/.test(contentsById.get(f) || ""));
   if (anims.length) {
@@ -361,29 +481,80 @@ function projectRules(files, contentsById) {
       });
     }
   }
-  // Token coherence against DESIGN-SYSTEM.md if present
-  for (const dsPath of [".lexia-design/DESIGN-SYSTEM.md", "DESIGN-SYSTEM.md"]) {
-    if (!existsSync(dsPath)) continue;
-    try {
-      const ds = readFileSync(dsPath, "utf8");
-      const tokens = new Set((ds.match(/#[0-9a-fA-F]{6}\b/g) || []).map((h) => h.toLowerCase()));
-      if (tokens.size >= 3) {
-        for (const f of files) {
-          if (!STYLES.has(extname(f).toLowerCase())) continue;
-          const hexes = (contentsById.get(f) || "").match(/#[0-9a-fA-F]{6}\b/g) || [];
-          const off = [...new Set(hexes.map((h) => h.toLowerCase()))].filter((h) => !tokens.has(h));
-          if (off.length >= 3) {
-            findings.push({
-              id: "system/off-token-colors", severity: "moderate", confidence: "review",
-              file: f, line: 1, evidence: `${off.length} hex values not in DESIGN-SYSTEM.md tokens (e.g. ${off.slice(0, 3).join(", ")})`,
-              msg: "Colors outside the declared token set",
-              fix: "Map to existing tokens or extend the system deliberately (log the decision).",
-            });
-          }
+  // Theme toggle vs dark: variant desync (field learning: custom [data-theme]
+  // toggles silently break every dark: utility when app theme != OS theme).
+  const usesDarkVariant = files.some((f) => /(?:^|["'`\s:({])dark:/.test(contentsById.get(f) || ""));
+  const writesDataTheme = files.some((f) => /setAttribute\(\s*["']data-theme["']|dataset\.theme\s*=/.test(contentsById.get(f) || ""));
+  const hasCustomVariant = files.some((f) => /@custom-variant\s+dark/.test(contentsById.get(f) || ""));
+  const hasDarkModeConfig = files.some((f) => /darkMode\s*:/.test(contentsById.get(f) || ""));
+  if (usesDarkVariant && writesDataTheme && !hasCustomVariant && !hasDarkModeConfig) {
+    findings.push({
+      id: "system/dark-variant-desync", severity: "serious", confidence: "review",
+      file: files.find((f) => /setAttribute\(\s*["']data-theme["']|dataset\.theme\s*=/.test(contentsById.get(f) || "")) || files[0],
+      line: 1,
+      evidence: "dark: utilities + a [data-theme] writer, with no @custom-variant dark and no darkMode config",
+      msg: "Custom theme toggle desynced from dark: variants",
+      fix: "Tailwind 4: @custom-variant dark (&:where([data-theme=\"dark\"], [data-theme=\"dark\"] *)); or key dark: off your real toggle mechanism.",
+    });
+  }
+
+  // Token coherence + token-quality checks against DESIGN-SYSTEM.md if present
+  const ds = readDesignSystem(root);
+  if (ds) {
+    const tokens = new Set((ds.text.match(/#[0-9a-fA-F]{6}\b/g) || []).map((h) => h.toLowerCase()));
+    if (tokens.size >= 3) {
+      for (const f of files) {
+        if (!STYLES.has(extname(f).toLowerCase())) continue;
+        const hexes = (contentsById.get(f) || "").match(/#[0-9a-fA-F]{6}\b/g) || [];
+        const off = [...new Set(hexes.map((h) => h.toLowerCase()))].filter((h) => !tokens.has(h));
+        if (off.length >= 3) {
+          findings.push({
+            id: "system/off-token-colors", severity: "moderate", confidence: "review",
+            file: f, line: 1, evidence: `${off.length} hex values not in DESIGN-SYSTEM.md tokens (e.g. ${off.slice(0, 3).join(", ")})`,
+            msg: "Colors outside the declared token set",
+            fix: "Map to existing tokens or extend the system deliberately (log the decision).",
+          });
         }
       }
-    } catch { /* unreadable design system file — skip */ }
-    break;
+
+      // Near-duplicate tokens collapse ramps (deltas measured, not eyeballed).
+      const toks = [...tokens];
+      const dupes = [];
+      for (let i = 0; i < toks.length; i++) {
+        for (let j = i + 1; j < toks.length; j++) {
+          if (rgbDistance(toks[i], toks[j]) < 16 && toks[i] !== toks[j]) dupes.push(`${toks[i]}~${toks[j]}`);
+        }
+      }
+      if (dupes.length) {
+        findings.push({
+          id: "system/near-duplicate-tokens", severity: "minor", confidence: "review",
+          file: ds.path, line: 1,
+          evidence: `${dupes.length} near-identical pair(s): ${dupes.slice(0, 3).join(", ")}`,
+          msg: "Near-duplicate color tokens render as one level",
+          fix: "Two grays a few RGB points apart make the ramp fiction. Delete one or separate them genuinely.",
+        });
+      }
+
+      // Accent that is functionally ink deletes every accent moment.
+      const named = {};
+      const tokenLine = /--?([\w-]+)\s*[:=]\s*(#[0-9a-fA-F]{6})\b/g;
+      let tm;
+      while ((tm = tokenLine.exec(ds.text))) named[tm[1].toLowerCase()] = tm[2].toLowerCase();
+      const accentKey = Object.keys(named).find((k) => /(^|-)(primary|accent)($|-)/.test(k) && !/foreground|content|on-/.test(k));
+      const inkKey = Object.keys(named).find((k) => /(^|-)(ink|foreground|text)($|-)?/.test(k) && !/subtle|muted|tertiary|inverse/.test(k));
+      if (accentKey && inkKey && named[accentKey] !== named[inkKey]) {
+        const ratio = contrastRatio(named[accentKey], named[inkKey]);
+        if (ratio < 2) {
+          findings.push({
+            id: "system/accent-ink-indistinct", severity: "moderate", confidence: "review",
+            file: ds.path, line: 1,
+            evidence: `contrast(${accentKey} ${named[accentKey]}, ${inkKey} ${named[inkKey]}) = ${ratio.toFixed(2)}:1`,
+            msg: "Accent is functionally ink (measured, not eyeballed)",
+            fix: "hover:text-primary, highlights and selected states are invisible. Give the accent real chroma or stop using it as a text accent.",
+          });
+        }
+      }
+    }
   }
   return findings;
 }
@@ -463,7 +634,7 @@ async function hookMode() {
     console.log(JSON.stringify({
       hookSpecificOutput: {
         hookEventName: "PostToolUse",
-        additionalContext: `lexia-design detector found ${findings.length} issue(s) in the file just written:\n${top}${extra}\nFix certain-confidence critical/serious items now; "review" items need judgment.`,
+        additionalContext: `lexia-design detector found ${findings.length} issue(s) in the file just written:\n${top}${extra}\nVerify each finding against its context before acting (it may already be mitigated: sr-only labels, role="status" skeletons). Report verdicts, not raw flags: TRUE_POSITIVE / MITIGATED / FALSE_POSITIVE. Waive deliberate choices inline with lexia-disable-next-line <rule-id> plus a decisions.jsonl entry.`,
       },
     }));
     process.exit(0);
@@ -495,7 +666,8 @@ function listRules() {
   for (const r of RULES) {
     console.log(`${r.id} | ${r.severity} | ${r.confidence} | ${[...r.exts].join(",")}`);
   }
-  console.log(`\n${RULES.length} file-level rules + 2 project-level rules (project/no-reduced-motion-anywhere, system/off-token-colors)`);
+  console.log(`\n${RULES.length} file-level rules + 5 project-level rules (project/no-reduced-motion-anywhere, system/off-token-colors, system/dark-variant-desync, system/near-duplicate-tokens, system/accent-ink-indistinct)`);
+  console.log(`Inline waivers: lexia-disable-file <rule-id> | lexia-disable-next-line <rule-id> (comment; pair with a decisions.jsonl entry)`);
 }
 
 async function main() {
@@ -510,9 +682,9 @@ async function main() {
 
   try {
     let files = [];
+    const rootDir = resolve(positional[0] || ".");
     if (deep) {
-      const root = resolve(positional[0] || ".");
-      files = walk(root);
+      files = walk(rootDir);
     } else {
       files = positional.map((p) => resolve(p)).filter((p) => existsSync(p));
       if (!files.length) {
@@ -529,12 +701,12 @@ async function main() {
         try { const st = statSync(f); if (st.size <= MAX_FILE_BYTES) contents.set(f, blankComments(readFileSync(f, "utf8"))); } catch { /* skip */ }
       }
     }
-    if (deep) findings.push(...projectRules(files, contents));
+    if (deep) findings.push(...projectRules(files, contents, rootDir));
 
     findings = findings.map((f) => ({ ...f, file: relative(process.cwd(), f.file) || f.file }));
 
     if (format === "json") {
-      console.log(JSON.stringify({ tool: "lexia-design-audit", version: "0.1.0", scanned: files.length, summary: summarize(findings), findings }, null, 2));
+      console.log(JSON.stringify({ tool: "lexia-design-audit", version: "0.2.0", scanned: files.length, summary: summarize(findings), findings }, null, 2));
     } else {
       printText(findings, files.length);
     }

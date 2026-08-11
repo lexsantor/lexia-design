@@ -28,24 +28,40 @@ them the detector output.
 2. Deterministic pass:
    `node ${CLAUDE_PLUGIN_ROOT}/scripts/lexia-design-audit.mjs --deep <dir>
    --format json`. Rules with IDs (a11y/*, motion/*, slop/*, content/*,
-   system/*); exit 1 means serious+ findings exist. Also run the
+   system/*, correctness/*, ux/*); exit 1 means serious+ findings exist.
+   Then run the VERIFICATION pass: check every flag against its context
+   and assign a verdict: TRUE_POSITIVE / MITIGATED (the concern is
+   already handled: sr-only label present, skeleton carries
+   role="status") / FALSE_POSITIVE. Report verdicts, never raw flags;
+   regex tripwires without verification erode trust in the whole audit.
+   Waived findings carry their decisions.jsonl reference. Also run the
    project's own build/typecheck/lint/tests if present: a red build caps
    PRODUCTION_READINESS at 3.
 3. Render pass. Screenshot key pages at 375/768/1440 (+ both themes).
    If rendering is impossible, mark visual dimensions "not visually
    verified": never score screenshots that don't exist.
-4. Agent pass (parallel, fresh context, screenshots + brief as input):
+4. Agent pass (parallel, disjoint lenses, screenshots + brief as input):
    - ux-auditor: heuristics, accessibility, states, forms, content
      integrity.
    - visual-critic: hierarchy, typography, color, spacing, coherence,
      distinctiveness, anti-slop judgment calls.
    - motion-engineer: only if motion exists or was requested.
+   First audit of a build: fresh context (no inherited optimism).
+   Re-audits of the same build: reuse the same reviewers with their
+   prior findings, so the scale stays stable and "fixed" is verified
+   against the original complaint. Findings where two lenses converge
+   independently on the same file are near-certain: surface them first.
    Reviewers report their own verdicts; do not soften their wording in
    synthesis.
 5. Checklist sweeps (self, using references under
    `${CLAUDE_PLUGIN_ROOT}/references/`): wcag-checklist.md gate items,
    forms-and-states.md seven states, anti-slop/registry.md two tests
    (interchangeability + reflex), responsive + content-length stress.
+   On app surfaces add production/launch-and-structure.md: trust surface
+   (legal routes, favicon, metadata, robots), timezone-safe "today"
+   logic, revalidation targets vs rendering routes, waterfall counts,
+   and the interaction motion of the highest-value component (teams
+   polish landings and ship the core widget motion-dead).
 6. Synthesize. Merge tracks; deduplicate; classify severity: critical
    (blocks use / a11y gate / fabrication), serious (materially degrades),
    moderate, minor, review (needs human judgment). Distinguish error vs

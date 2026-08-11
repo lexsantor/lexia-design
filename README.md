@@ -27,14 +27,16 @@ wins") outranks the plugin's aesthetic preferences.
 - Hooks: PostToolUse deterministic detector on UI file writes (advisory,
   never blocks); Stop reminder for unresolved critical findings.
 - Scripts (`scripts/`, zero dependencies, Node >= 18):
-  `lexia-design-audit.mjs` (30 file rules + 2 project rules),
-  `lexia-design-score.mjs` (init / gate / history),
+  `lexia-design-audit.mjs` (36 file rules + 5 project rules, WCAG color
+  math, inline `lexia-disable` waivers),
+  `lexia-design-score.mjs` (init / gate / history, coverage-aware),
   `lexia-design-update.mjs` (source drift, metadata only).
 - Knowledge (`references/`): heuristics, anti-slop registry, WCAG 2.2
   checklists, motion principles, GSAP playbook, 12 visual directions,
-  component-library policy.
+  component-library policy, launch/trust-surface and structure checks
+  (`references/production/`), field learnings (`docs/learnings/`).
 - Evals (`evals/`): 14 cases (12 positive, 2 negative) + offline smoke
-  runner with a real detector self-test.
+  runner with a real detector self-test (file and --deep fixtures).
 
 ## Install
 
@@ -95,7 +97,11 @@ node scripts/lexia-design-audit.mjs --deep src --format json     # whole tree + 
 
 Exit 1 = critical/serious findings. `confidence: "review"` findings are
 heuristic signals that need human judgment; the detector never rewrites
-code.
+code. Every finding gets verified before it is acted on (TRUE_POSITIVE /
+MITIGATED / FALSE_POSITIVE): a flag is a signal, not a verdict.
+Deliberate deviations are waived inline
+(`// lexia-disable-next-line <rule-id>` or `lexia-disable-file`) paired
+with a `decisions.jsonl` entry.
 
 ## Convergence gate
 

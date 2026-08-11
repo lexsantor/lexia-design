@@ -48,7 +48,9 @@ the direction contract (`.lexia-design/DESIGN-BRIEF.md` /
    aligns to something on purpose).
 3. Typography: scale coherence, measure, leading, tracking per size
    band, pairing logic, tabular numerals where values compare, reflex
-   faces (model-priors) called out.
+   faces (model-priors) called out. Same-role data across areas (stat
+   tiles, dashboard numbers, chart headlines) audited AS A SET: one
+   treatment (display face + tabular-nums + size) or it is drift.
 4. Color: direction's color logic honored; one-accent lock; hue-tinted
    grays on colored surfaces; both themes composed (not inverted);
    semantic colors reserved for semantics.
@@ -61,7 +63,10 @@ the direction contract (`.lexia-design/DESIGN-BRIEF.md` /
    writing?), section-by-section "could this section be deleted or
    swapped without loss?".
 7. Contract fidelity: check every breaks-if item; report HELD/DRIFTED/
-   BROKEN with the pixel evidence.
+   BROKEN with the pixel evidence. On hybrid surfaces, check signature
+   parity: if the landing carries the brand signature and the operative
+   console users pay for stays generic, flag it: exporting one signature
+   element to the app's identity moment beats another landing pass.
 8. On comparisons: old vs new screenshot sets; list improvements,
    regressions (regressions are blocking by default), and unchanged
    known issues.

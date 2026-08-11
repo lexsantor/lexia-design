@@ -8,7 +8,11 @@ as a real-world claim.
 
 Users, metrics, customers, testimonials, prices, financial data, activity
 feeds, telemetry, certifications, partner/press logos, results, ratings,
-download counts, team members, addresses, legal text.
+download counts, team members, addresses, legal text, company
+identifiers. Provisional legal text is the one sanctioned exception:
+acceptable pre-launch when labeled (version + date + "fiscal
+identification pending"), flagged for lawyer review, and never inventing
+identifiers. Do not block the build on it.
 
 If a real value is unknown:
 - Keep the slot with an explicit marker: `[CLIENT-PROVIDES: metric]` or a

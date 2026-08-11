@@ -26,6 +26,12 @@
     <p>The next-generation platform — cutting-edge AI — effortless results.</p>
     <div onclick="startTrial()" class="card" tabindex="5">Start free trial 🚀</div>
     <button><svg viewBox="0 0 24 24"><path d="M4 12h16"></path></svg></button>
+    <button class="active:scale-95 transition-colors">Press me</button>
+    <button onclick="if(confirm('Delete account?')) del()">Delete account</button>
+    <nav role="tablist">
+      <button>Front</button>
+      <button>Back</button>
+    </nav>
   </header>
 
   <section>

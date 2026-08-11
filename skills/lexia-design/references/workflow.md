@@ -35,20 +35,38 @@ VISUAL_REGRESSIONS = 0
    mark all visual scores as "not visually verified": never invent visual
    judgments of unrendered UI.
 8. AUDIT. Run `node ${CLAUDE_PLUGIN_ROOT}/scripts/lexia-design-audit.mjs
-   --deep <dir>` for deterministic findings. In parallel, dispatch
-   fresh-context agents (ux-auditor, visual-critic, motion-engineer when
-   motion exists) with the screenshots + brief. Fresh context is the
-   point: reviewers must not inherit the builder's optimism.
-9. PRIORITIZE. Merge findings; order by severity x user impact. Blockers:
-   accessibility criticals, broken flows, content fabrications, build
-   errors.
-10. FIX. The top 3 highest-impact problems first. No cosmetic work while
-    functional errors exist.
+   --deep <dir>` for deterministic findings, then VERIFY each detector
+   finding against its context before reporting: verdicts are
+   TRUE_POSITIVE / MITIGATED (e.g. sr-only label exists, skeleton has
+   role="status") / FALSE_POSITIVE. Never act on or report raw flags.
+   In parallel, dispatch reviewer agents with disjoint lenses
+   (ux-auditor, visual-critic, motion-engineer when motion exists) with
+   the screenshots + brief. First audit: fresh context, so reviewers do
+   not inherit the builder's optimism. Re-audits in later iterations:
+   reuse the SAME reviewers with their previous findings as input, so
+   the scale stays stable and "fixed" claims are verified against the
+   original complaint. Where two lenses converge independently on the
+   same file, confidence is near-certain: schedule those first. On app
+   surfaces, include the launch gate
+   (`${CLAUDE_PLUGIN_ROOT}/references/production/launch-and-structure.md`).
+9. PRIORITIZE. Merge findings; tier by effort x impact:
+   tier 1 bugs and launch blockers, tier 2 system coherence, tier 3
+   structure, tier 4 polish. Blockers: accessibility criticals, broken
+   flows, content fabrications, build errors.
+10. FIX. Complete tier 1 before touching tier 2; mixed-tier fixing
+    loses the audit trail. Within a tier, top-3 by impact. No cosmetic
+    work while functional errors exist. Waive deliberate deviations the
+    same day, twice: inline (`lexia-disable-next-line <rule-id>`) and in
+    decisions.jsonl.
 11. RE-RENDER. Same breakpoints, same pages.
 12. COMPARE. Against the previous iteration: fixed? regressed? Run
     `node ${CLAUDE_PLUGIN_ROOT}/scripts/lexia-design-score.mjs gate` with the
-    new scores; it appends history and returns a verdict. Revert any
-    change that scored worse than what it replaced.
+    new scores; it appends history and returns a verdict. Record the
+    audit's coverage (`"coverage"` field in the scores file): a deeper
+    audit scoring lower than a shallower one is NOT a regression: new
+    lenses surface new defect classes. Without coverage, the number is
+    meaningless across cycles. Revert any change that scored worse than
+    what it replaced on the same coverage.
 13. STOP when: all thresholds met; OR verdict says no measurable
     improvement over the previous iteration; OR MAX_ITERATIONS reached.
     Never continue chasing subjective perfection. On stop with unmet

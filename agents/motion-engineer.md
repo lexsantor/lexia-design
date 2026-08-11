@@ -43,14 +43,21 @@ if available. References under the plugin root:
    trigger, frequency of exposure, function claimed (causality /
    continuity / attention / state / orientation / brand delight), spec
    (duration, easing, origin), interruption behavior, reduced-motion
-   variant, cleanup owner.
+   variant, cleanup owner. Inventory the de-facto second system too:
+   bare transition utilities running framework defaults outside the
+   declared tokens. And explicitly audit the interaction motion of the
+   highest-value component (view swaps, selection states): it is
+   usually motion-dead while the landing is polished.
 2. Apply the frequency gate first: anything on a keyboard path or a
    100x/day surface with animation is a finding regardless of beauty.
-3. Mechanical correctness: duration bands, easing choices (ease-out UI
-   default; no ease-in on entrances; linear for constant motion), no
-   scale(0) entrances, transform-origin physical, exits faster than
+3. Mechanical correctness: duration bands (hover color 150-250ms even
+   when lifts run slower: split per property), easing choices (ease-out
+   UI default; no ease-in on entrances; linear for constant motion), no
+   scale(0) entrances, no filter/blur in entrances, press transitions
+   cover transform, transform-origin physical, exits faster than
    entrances, stagger bounds, transform/opacity only, no transition:
-   all, no scroll listeners.
+   all, no scroll listeners, reduced-motion blocks cap
+   animation-iteration-count.
 4. Interruption: rapid re-trigger reasoning (transitions retarget;
    keyframes restart: flag misuse), input never locked, live-value
    animation.

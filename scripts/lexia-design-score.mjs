@@ -134,8 +134,10 @@ function gate(args) {
   }
 
   const t = loadThresholds(projectDir);
+  const coverage = typeof input.coverage === "string" ? input.coverage : undefined;
   const history = readHistory(projectDir);
   const prev = history.length ? history[history.length - 1] : null;
+  const coverageChanged = prev ? (prev.coverage ?? null) !== (coverage ?? null) : false;
   const iteration = parseInt(arg(args, "--iteration", prev ? String(prev.iteration + 1) : "1"), 10);
   const regressions = parseInt(arg(args, "--regressions", "0"), 10);
   const criticalA11y = parseInt(arg(args, "--critical-a11y", String(input.criticalA11y ?? 0)), 10);
@@ -173,12 +175,12 @@ function gate(args) {
   let verdict;
   if (allPass) verdict = "stop-converged";
   else if (iteration >= t.MAX_ITERATIONS) verdict = "stop-max-iterations";
-  else if (prev && delta !== null && delta <= t.MIN_PROGRESS_DELTA && regressed.size === 0 && improved.size === 0) verdict = "stop-no-progress";
+  else if (prev && delta !== null && !coverageChanged && delta <= t.MIN_PROGRESS_DELTA && regressed.size === 0 && improved.size === 0) verdict = "stop-no-progress";
   else verdict = "continue";
 
   const entry = {
     ts: new Date().toISOString(),
-    iteration, scores, total, delta,
+    iteration, scores, total, delta, coverage,
     criticalA11y, criticalUsability, regressions,
     gates: Object.fromEntries(Object.entries(gates).map(([k, g]) => [k, g.pass])),
     verdict,
@@ -197,7 +199,8 @@ function gate(args) {
       const bound = "min" in g ? `>= ${g.min}` : `<= ${g.max}`;
       console.log(`  ${g.pass ? "PASS" : "FAIL"}  ${name} ${g.note ?? g.value} (${bound})`);
     }
-    if (regressed.size) console.log(`  regressed dimensions: ${[...regressed].join(", ")} — revert what caused this or justify`);
+    if (coverageChanged) console.log(`  NOTE: audit coverage changed ("${prev.coverage ?? "unspecified"}" -> "${coverage ?? "unspecified"}"). Totals are not directly comparable; a deeper audit scoring lower is not a regression.`);
+    if (regressed.size) console.log(`  regressed dimensions: ${[...regressed].join(", ")} — revert what caused this or justify${coverageChanged ? " (coverage changed: check the finding is on previously-audited surface)" : ""}`);
     if (improved.size) console.log(`  improved dimensions: ${[...improved].join(", ")}`);
     console.log(`VERDICT: ${verdict}`);
     if (verdict === "stop-max-iterations") console.log("Report remaining gaps honestly; do not keep iterating.");

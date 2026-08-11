@@ -27,9 +27,16 @@ in novelty layouts.
 
 Marketing site + app, docs + product, storefront + account area. Draw the
 zone map explicitly in the brief: which routes/sections are brand, which
-are product. Apply each register to its zone. Two named failure modes:
-landing rules leaking into operative panels (decorated dashboards), and
-product austerity flattening the brand story (dead marketing pages).
+are product. Apply each register to its zone. Three named failure modes:
+landing rules leaking into operative panels (decorated dashboards),
+product austerity flattening the brand story (dead marketing pages), and
+signature asymmetry: the landing accretes the brand signature (bezels,
+display type, motion) while the console users pay for stays generic
+stacked cards. Export at least one signature element to the app's
+identity moment (a header, a protagonist metric); it moves
+distinctiveness more than another landing pass. Same-role data (stat
+tiles, chart headlines) shares ONE treatment across areas: audit them as
+a set.
 
 ## Visitor-mode lens (secondary check)
 

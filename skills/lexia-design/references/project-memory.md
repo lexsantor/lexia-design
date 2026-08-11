@@ -41,7 +41,12 @@ project root. Create with:
 
 ## Write protocol
 
-- Log decisions when made, not retroactively en masse.
+- Log decisions when made, not retroactively en masse. Waivers are
+  logged the same day they are accepted, twice: an inline
+  `lexia-disable-next-line <rule-id>` (or `lexia-disable-file`) comment
+  next to the code, and the decisions.jsonl entry with the reason. The
+  inline directive silences the detector; the jsonl entry survives
+  refactors and informs every future agent.
 - Classify scope honestly:
   - project preference: holds for this repo (e.g. "tables over cards").
   - user preference: the human stated it as general taste; still confirm
