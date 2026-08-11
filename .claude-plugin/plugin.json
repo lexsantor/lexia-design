@@ -4,7 +4,8 @@
   "version": "0.3.0",
   "description": "Design OS for coding agents: distinctive, accessible, production-ready web interfaces. Orchestrates visual direction, design systems, UX heuristics, anti-AI-slop auditing and functional motion through /lexia-design.",
   "author": {
-    "name": "Taller24"
+    "name": "lexsantor",
+    "url": "https://github.com/lexsantor"
   },
   "license": "MIT",
   "keywords": [
@@ -19,5 +20,7 @@
     "anti-slop",
     "frontend"
   ],
-  "hooks": "./hooks/hooks.json"
+  "hooks": "./hooks/hooks.json",
+  "homepage": "https://github.com/lexsantor/lexia-design",
+  "repository": "https://github.com/lexsantor/lexia-design"
 }

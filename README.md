@@ -388,6 +388,6 @@ applied to it, not measurement.
 
 <div align="center">
 
-MIT · Built by [Taller24](https://github.com/lexsantor)
+MIT · [lexsantor](https://github.com/lexsantor)
 
 </div>

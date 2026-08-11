@@ -1,7 +1,8 @@
 {
   "name": "lexia",
   "owner": {
-    "name": "Taller24"
+    "name": "lexsantor",
+    "url": "https://github.com/lexsantor"
   },
   "metadata": {
     "description": "Marketplace for the Lexia design tooling. Contains the lexia-design plugin."
@@ -12,7 +13,13 @@
       "source": "./",
       "description": "Design OS for coding agents: distinctive, accessible, production-ready web interfaces with anti-slop auditing, design systems and functional motion.",
       "category": "design",
-      "tags": ["design", "ux", "accessibility", "motion", "audit"]
+      "tags": [
+        "design",
+        "ux",
+        "accessibility",
+        "motion",
+        "audit"
+      ]
     }
   ]
 }
